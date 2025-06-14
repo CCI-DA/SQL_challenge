@@ -9,6 +9,7 @@
 ### What is the 8 Week SQL Challenge?
 >The 8 Week SQL Challenge is a **data analytics project** created by Danny Ma that presents eight unique **business scenarios** across different industries. 
 >Each case study includes a **database schema** and a set of **real-world business questions** to be answered using SQL. It’s designed to **simulate practical data challenges** and test a wide range of SQL skills—from basic queries to complex data transformations and analytical thinking.
+> <https://8weeksqlchallenge.com/>
 
 ### Setup and Tools
 > 1. Developed using Visual Studio Code (VSC)
