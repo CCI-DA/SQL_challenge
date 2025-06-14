@@ -1,5 +1,5 @@
 # Description
-First case
+I am completing a series of 8 SQL challenges to strengthen my skills and demonstrate my knowledge. This repository holds the solution for Case Study 1.
 
 # Setup and Tools
 > Developed using Visual Studio Code (VSC)
