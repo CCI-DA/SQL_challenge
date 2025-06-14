@@ -20,8 +20,10 @@ GROUP BY customer_id
 -- 3. What was the first item from the menu purchased by each customer?
 
 WITH first_purchases AS (
-    SELECT customer_id, order_date, product_id,
-        ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date ASC) AS rn
+    SELECT customer_id, 
+    order_date, 
+    product_id,
+    ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date ASC) AS rn
     FROM sales
 )
 SELECT  customer_id, order_date AS first_order_date, product_id AS first_product_id
