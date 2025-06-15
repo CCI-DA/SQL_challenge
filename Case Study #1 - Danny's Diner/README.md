@@ -18,13 +18,11 @@
 > You can refer to the entity relationship diagram in ER_Model_Case.png.
 
 ### What to spect
->Explore and clean the datasets.
+>Common Table Expressions
+> Group By Aggregates
+>Window Functions for ranking
+> Table Joins
 
->Write SQL queries to answer Danny’s business questions.
-
->Generate summary tables for easier data inspection.
-
->Reflect on the insights uncovered and potential business actions.
 
 
 ### Setup and Tools
