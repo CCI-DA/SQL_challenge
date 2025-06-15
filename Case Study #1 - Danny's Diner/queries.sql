@@ -127,8 +127,7 @@ SELECT s.customer_id,
       CASE 
         WHEN mn.product_name = 'sushi' THEN mn.price *20
         ELSE mn.price * 10
-      END) 
-      AS total_points
+      END) AS total_points
 
 FROM sales AS s
 INNER JOIN menu AS mn ON s.product_id = mn.product_id
@@ -150,8 +149,7 @@ SELECT s.customer_id,
 
       -- Rest 10 points
         ELSE mn.price * 10 
-        END) 
-        AS total_points_end_january
+      END) AS total_points_end_january
 
 FROM sales AS s
 INNER JOIN menu AS mn ON s.product_id = mn.product_id
@@ -167,9 +165,11 @@ GROUP BY s.customer_id
 -- Recreate the following table output using the available data:
 
 SELECT s.customer_id, s.order_date , mn.product_name , mn.price, 
-  (CASE WHEN mb.join_date <= s.order_date  THEN 'Y'
-  ELSE 'N'
+  (CASE 
+    WHEN mb.join_date <= s.order_date  THEN 'Y'
+    ELSE 'N'
   END) AS member
+
 FROM sales AS s
 INNER JOIN menu AS mn ON s.product_id = mn.product_id
 LEFT JOIN members AS mb ON mb.customer_id = s.customer_id
@@ -183,9 +183,11 @@ ORDER BY s.order_date
 
 WITH member_column AS(
   SELECT s.customer_id, s.order_date , mn.product_name , mn.price, 
-  (CASE WHEN mb.join_date <= s.order_date  THEN 'Y'
-  ELSE 'N'
+  (CASE 
+    WHEN mb.join_date <= s.order_date  THEN 'Y'
+    ELSE 'N'
   END) AS member
+
 FROM sales AS s
 INNER JOIN menu AS mn ON s.product_id = mn.product_id
 LEFT JOIN members AS mb ON mb.customer_id = s.customer_id
@@ -193,9 +195,11 @@ LEFT JOIN members AS mb ON mb.customer_id = s.customer_id
 
 ranked_column AS(
   SELECT customer_id, order_date, product_name, price, member,
-  (CASE WHEN member = 'N' THEN NULL
-  ELSE DENSE_RANK() OVER (PARTITION BY member, customer_id ORDER BY order_date)
-  END) AS rnk 
+  (CASE 
+    WHEN member = 'N' THEN NULL
+    ELSE DENSE_RANK() OVER (PARTITION BY member, customer_id ORDER BY order_date)
+  END) AS ranking
+
   FROM member_column
 )
 
