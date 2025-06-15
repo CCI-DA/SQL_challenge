@@ -27,14 +27,14 @@
 >Reflect on the insights uncovered and potential business actions.
 
 
-# Setup and Tools
-> Developed using Visual Studio Code (VSC)
-> Connected to SQL Server through SQL Server Management Studio (SSMS)
-> Version controlled with GitHub
+### Setup and Tools
+> 1. Developed using Visual Studio Code (VSC)
+> 2. Connected to SQL Server through SQL Server Management Studio (SSMS)
+> 3. Version controlled with GitHub
 
-# How to Run
-> Open the .sql files in Visual Studio Code or SSMS.
-> Execute the scripts against your SQL Server instance.
+### How to Run
+> 1. Open the .sql files in Visual Studio Code or SSMS.
+> 2. Execute the scripts against your SQL Server instance.
 
 # License
 >This project is for personal learning and practice.
