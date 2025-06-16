@@ -80,10 +80,32 @@ GROUP BY customer_id, changes
 
 
 -- 8. How many pizzas were delivered that had both exclusions and extras?
+
+SELECT COUNT(*) pizzas_delivered_with_exclusions_extras 
+FROM customer_orders AS co
+INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
+WHERE ro.cancellation IS NULL 
+AND co.exclusions IS NOT NULL 
+AND co.extras IS NOT NULL 
+;
+
+
+
 -- 9. What was the total volume of pizzas ordered for each hour of the day?
+
+SELECT DATEPART(HOUR,order_time) AS hour_of_day, COUNT(*) AS volume_pizzas_ordered
+FROM customer_orders 
+GROUP BY DATEPART(HOUR,order_time)
+;
+
+
+
 -- 10.What was the volume of orders for each day of the week?
 
-
+SELECT DATENAME(WEEKDAY,order_time) AS day_of_week, COUNT(*) AS volume_orders
+FROM customer_orders
+GROUP BY DATENAME(WEEKDAY, order_time)
+;
 
 
 
