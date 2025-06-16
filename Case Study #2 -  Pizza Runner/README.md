@@ -9,13 +9,8 @@
 > You can refer to the entity relationship diagram in ER_Model_Case2.png.
 
 ### What to spect
->Explore and clean the datasets.
-
->Write SQL queries to answer Danny’s business questions.
-
->Generate summary tables for easier data inspection.
-
->Reflect on the insights uncovered and potential business actions.
+> Primero nos fijamos que las tablas customer_orders y runner_orders tienen inconsitencia de datos. Hay que limpiar ambas tablas para poder trabajar con ellas. En la parte de clean_data , podreis observar las modificaciones realizadas.
+> 
 
 
 ### Setup and Tools

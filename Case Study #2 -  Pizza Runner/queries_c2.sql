@@ -2,17 +2,40 @@
 
 -- 1. How many pizzas were ordered?
 
-SELECT *
+SELECT COUNT(pizza_id) AS total_pizzas_ordered
 FROM customer_orders
+;
+
+
+
+-- 2. How many unique customer orders were made?
+SELECT COUNT(DISTINCT(customer_id)) AS total_customers
+FROM customer_orders
+;
+
+
+
+-- 3. How many successful orders were delivered by each runner?
+
+SELECT runner_id, COUNT(order_id) AS successful_orders_delivered
+FROM runner_orders
+WHERE cancellation IS NULL 
+GROUP BY runner_id
+; 
+
+-- 4. How many of each type of pizza was delivered?
+
+SELECT pn.pizza_name AS pizza_name , COUNT(co.pizza_id) AS total_pizza_delivered
+FROM runner_orders AS ro
+INNER JOIN customer_orders AS co ON ro.order_id = co.order_id
+INNER JOIN pizza_names AS pn ON co.pizza_id = pn.pizza_id
+GROUP BY pizza_name
 ;
 
 
 
 
 
--- 2. How many unique customer orders were made?
--- 3. How many successful orders were delivered by each runner?
--- 4. How many of each type of pizza was delivered?
 -- 5. How many Vegetarian and Meatlovers were ordered by each customer?
 -- 6. What was the maximum number of pizzas delivered in a single order?
 -- 7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?

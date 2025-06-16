@@ -12,6 +12,10 @@ SET cancellation = NULL
 WHERE cancellation = ''
 ;
 
+UPDATE runner_orders
+SET cancellation = NULL
+WHERE cancellation = 'null'
+;
 -- Rename columns names 
 EXEC sp_rename 'runner_orders.distance', 'distance_km', 'COLUMN';
 EXEC sp_rename 'runner_orders.duration', 'duration_min', 'COLUMN';
