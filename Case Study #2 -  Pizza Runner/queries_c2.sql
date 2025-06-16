@@ -1,6 +1,15 @@
 -- A. Pizza Metrics
 
 -- 1. How many pizzas were ordered?
+
+SELECT *
+FROM customer_orders
+;
+
+
+
+
+
 -- 2. How many unique customer orders were made?
 -- 3. How many successful orders were delivered by each runner?
 -- 4. How many of each type of pizza was delivered?
@@ -10,6 +19,30 @@
 -- 8. How many pizzas were delivered that had both exclusions and extras?
 -- 9. What was the total volume of pizzas ordered for each hour of the day?
 -- 10.What was the volume of orders for each day of the week?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 -- B. Runner and Customer Experience
