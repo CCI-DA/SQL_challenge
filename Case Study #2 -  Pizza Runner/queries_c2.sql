@@ -25,20 +25,60 @@ GROUP BY runner_id
 
 -- 4. How many of each type of pizza was delivered?
 
-SELECT pn.pizza_name AS pizza_name , COUNT(co.pizza_id) AS total_pizza_delivered
-FROM runner_orders AS ro
-INNER JOIN customer_orders AS co ON ro.order_id = co.order_id
-INNER JOIN pizza_names AS pn ON co.pizza_id = pn.pizza_id
-GROUP BY pizza_name
+SELECT co.pizza_id , COUNT(co.pizza_id) AS total_per_type
+FROM customer_orders AS co 
+INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
+WHERE ro.cancellation IS NULL
+GROUP BY co.pizza_id
 ;
 
 
 
-
-
 -- 5. How many Vegetarian and Meatlovers were ordered by each customer?
+
+SELECT co.customer_id, pn.pizza_name , COUNT(*) AS times_ordered
+FROM customer_orders AS co 
+INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
+INNER JOIN pizza_names as pn ON co.pizza_id = pn.pizza_id
+WHERE ro.cancellation IS NULL
+GROUP BY co.customer_id, pn.pizza_name
+
+;
+
+
+
 -- 6. What was the maximum number of pizzas delivered in a single order?
+
+SELECT TOP 1
+co.order_id , COUNT(*) AS max_number_pizzas_delivered
+FROM customer_orders AS co 
+INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
+WHERE ro.cancellation IS NULL
+GROUP BY co.order_id
+ORDER BY max_number_pizzas_delivered DESC
+;
+
+
+
 -- 7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
+WITH pizza_delivered_changes AS(
+     SELECT co.customer_id ,
+    (CASE
+        WHEN co.exclusions IS NULL AND co.extras IS NULL THEN 'No changes'
+        ELSE 'At least 1 change'
+    END) AS changes
+    FROM customer_orders AS co
+    INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
+    WHERE ro.cancellation IS NULL
+)
+
+SELECT customer_id , changes , COUNT(*) AS total_pizzas
+FROM pizza_delivered_changes
+GROUP BY customer_id, changes
+; 
+
+
+
 -- 8. How many pizzas were delivered that had both exclusions and extras?
 -- 9. What was the total volume of pizzas ordered for each hour of the day?
 -- 10.What was the volume of orders for each day of the week?
