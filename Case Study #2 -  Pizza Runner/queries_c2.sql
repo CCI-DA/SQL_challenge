@@ -138,6 +138,10 @@ GROUP BY ro.runner_id
 
 
 
+
+
+
+
 -- 4. What was the average distance travelled for each customer?
 WITH distinct_orders AS(
     SELECT DISTINCT co.order_id , 
@@ -166,18 +170,13 @@ WHERE ro.cancellation IS NULL
 
 
 -- 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
-
+-- QUÉ TREND¿?
 -- velocity = distance traveled / time taken
-SELECT (CAST(distance_km AS FLOAT)/CAST(duration_min AS FLOAT)) AS speed , runner_id
- FROM runner_orders
+
+SELECT runner_id, order_id, (CAST(distance_km AS FLOAT)/CAST(duration_min AS FLOAT)*60) AS avg_speed_km_hour
+FROM runner_orders
+WHERE cancellation IS NULL
 ;
-
-
-
-
-
-
-
 
 
 
@@ -197,7 +196,6 @@ SELECT runner_id,(SUM(clasification_orders)*100/COUNT(order_id)) AS successful_d
 FROM count_orders
 GROUP BY runner_id
 ;
-
 
 
 
