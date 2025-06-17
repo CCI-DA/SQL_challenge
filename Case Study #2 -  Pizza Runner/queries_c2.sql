@@ -157,54 +157,46 @@ GROUP BY customer_id
 
 -- 5. What was the difference between the longest and shortest delivery times for all orders?
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+SELECT MIN(duration_min) AS min_duration, MAX(duration_min) AS max_duration , 
+    (MAX(CAST(duration_min AS INT))- MIN(CAST(duration_min AS INT))) AS difference_btw_delivery_times
+FROM runner_orders ro
+INNER JOIN customer_orders AS co ON ro.order_id = co.order_id
+WHERE ro.cancellation IS NULL
+;
 
 
 -- 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
+
+-- velocity = distance traveled / time taken
+SELECT (CAST(distance_km AS FLOAT)/CAST(duration_min AS FLOAT)) AS speed , runner_id
+ FROM runner_orders
+;
+
+
+
+
+
+
+
+
+
+
 -- 7. What is the successful delivery percentage for each runner?
 
+WITH count_orders AS(
+    SELECT 
+        (CASE
+            WHEN cancellation IS NULL THEN 1
+            ELSE 0
+        END) AS clasification_orders ,
+         runner_id, order_id
+    FROM runner_orders
+)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+SELECT runner_id,(SUM(clasification_orders)*100/COUNT(order_id)) AS successful_delivery_percentage
+FROM count_orders
+GROUP BY runner_id
+;
 
 
 
