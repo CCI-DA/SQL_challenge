@@ -109,36 +109,105 @@ GROUP BY DATENAME(WEEKDAY, order_time)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 -- B. Runner and Customer Experience
 
 -- 1. How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)
+
+SELECT 
+  DATEADD(DAY, 7 * FLOOR(DATEDIFF(DAY, '2021-01-01', registration_date) / 7), '2021-01-01') AS week_start,
+  COUNT(*) AS runners_signed_up
+FROM runners
+WHERE registration_date >= '2021-01-01'
+GROUP BY DATEADD(DAY, 7 * FLOOR(DATEDIFF(DAY, '2021-01-01', registration_date) / 7), '2021-01-01')
+ORDER BY week_start;
+
+
+
 -- 2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
+
+SELECT ro.runner_id, AVG(DATEDIFF(MINUTE,co.order_time, ro.pickup_time)) AS avg_min
+FROM customer_orders AS co
+INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
+WHERE ro.cancellation IS NULL
+GROUP BY ro.runner_id
+;
+
+
+
 -- 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
+
+
+
 -- 4. What was the average distance travelled for each customer?
+WITH distinct_orders AS(
+    SELECT DISTINCT co.order_id , 
+                    co.customer_id,
+                    ro.distance_km
+    FROM runner_orders AS ro
+    INNER JOIN customer_orders AS co ON ro.order_id = co.order_id
+    WHERE ro.cancellation IS NULL
+)
+
+SELECT customer_id , AVG(CAST(distance_km AS FLOAT)) AS avg_distance_km
+FROM distinct_orders
+GROUP BY customer_id
+;
+
+
+
 -- 5. What was the difference between the longest and shortest delivery times for all orders?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 -- 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
 -- 7. What is the successful delivery percentage for each runner?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 -- C.Ingredient Optimisation
 
