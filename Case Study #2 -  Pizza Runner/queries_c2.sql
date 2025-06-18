@@ -7,12 +7,11 @@ FROM customer_orders
 ;
 
 
-
 -- 2. How many unique customer orders were made?
+
 SELECT COUNT(DISTINCT(customer_id)) AS total_customers
 FROM customer_orders
 ;
-
 
 
 -- 3. How many successful orders were delivered by each runner?
@@ -22,6 +21,7 @@ FROM runner_orders
 WHERE cancellation IS NULL 
 GROUP BY runner_id
 ; 
+
 
 -- 4. How many of each type of pizza was delivered?
 
@@ -33,7 +33,6 @@ GROUP BY co.pizza_id
 ;
 
 
-
 -- 5. How many Vegetarian and Meatlovers were ordered by each customer?
 
 SELECT co.customer_id, pn.pizza_name , COUNT(*) AS times_ordered
@@ -42,15 +41,13 @@ INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
 INNER JOIN pizza_names as pn ON co.pizza_id = pn.pizza_id
 WHERE ro.cancellation IS NULL
 GROUP BY co.customer_id, pn.pizza_name
-
 ;
-
 
 
 -- 6. What was the maximum number of pizzas delivered in a single order?
 
 SELECT TOP 1
-co.order_id , COUNT(*) AS max_number_pizzas_delivered
+        co.order_id , COUNT(*) AS max_number_pizzas_delivered
 FROM customer_orders AS co 
 INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
 WHERE ro.cancellation IS NULL
@@ -59,8 +56,8 @@ ORDER BY max_number_pizzas_delivered DESC
 ;
 
 
-
 -- 7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
+
 WITH pizza_delivered_changes AS(
      SELECT co.customer_id ,
     (CASE
@@ -78,7 +75,6 @@ GROUP BY customer_id, changes
 ; 
 
 
-
 -- 8. How many pizzas were delivered that had both exclusions and extras?
 
 SELECT COUNT(*) pizzas_delivered_with_exclusions_extras 
@@ -90,14 +86,12 @@ AND co.extras IS NOT NULL
 ;
 
 
-
 -- 9. What was the total volume of pizzas ordered for each hour of the day?
 
 SELECT DATEPART(HOUR,order_time) AS hour_of_day, COUNT(*) AS volume_pizzas_ordered
 FROM customer_orders 
 GROUP BY DATEPART(HOUR,order_time)
 ;
-
 
 
 -- 10.What was the volume of orders for each day of the week?
@@ -113,14 +107,13 @@ GROUP BY DATENAME(WEEKDAY, order_time)
 
 -- 1. How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)
 
-SELECT 
-  DATEADD(DAY, 7 * FLOOR(DATEDIFF(DAY, '2021-01-01', registration_date) / 7), '2021-01-01') AS week_start,
-  COUNT(*) AS runners_signed_up
+SELECT DATEADD(DAY, 7 * FLOOR(DATEDIFF(DAY, '2021-01-01', registration_date) / 7), '2021-01-01') AS week_start,
+    COUNT(*) AS runners_signed_up
 FROM runners
 WHERE registration_date >= '2021-01-01'
 GROUP BY DATEADD(DAY, 7 * FLOOR(DATEDIFF(DAY, '2021-01-01', registration_date) / 7), '2021-01-01')
-ORDER BY week_start;
-
+ORDER BY week_start
+;
 
 
 -- 2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
@@ -133,16 +126,25 @@ GROUP BY ro.runner_id
 ;
 
 
-
 -- 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
 
+WITH time_to_prepare AS(
+    SELECT  co.order_id, co.pizza_id, DATEDIFF(MINUTE,co.order_time, ro.pickup_time) AS time_to_prepare
+    FROM customer_orders AS co
+    INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
+    WHERE ro.cancellation IS NULL
+)
 
-
-
-
+SELECT order_id, COUNT(pizza_id) AS number_of_pizzas ,time_to_prepare
+FROM time_to_prepare
+GROUP BY order_id, time_to_prepare
+;
+-- Yes, it usually takes 10 minutes to make one pizza. 
+-- But if the quantity increases, the time increases too.
 
 
 -- 4. What was the average distance travelled for each customer?
+
 WITH distinct_orders AS(
     SELECT DISTINCT co.order_id , 
                     co.customer_id,
@@ -158,7 +160,6 @@ GROUP BY customer_id
 ;
 
 
-
 -- 5. What was the difference between the longest and shortest delivery times for all orders?
 
 SELECT MIN(duration_min) AS min_duration, MAX(duration_min) AS max_duration , 
@@ -170,14 +171,12 @@ WHERE ro.cancellation IS NULL
 
 
 -- 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
--- QUÉ TREND¿?
 -- velocity = distance traveled / time taken
 
 SELECT runner_id, order_id, (CAST(distance_km AS FLOAT)/CAST(duration_min AS FLOAT)*60) AS avg_speed_km_hour
 FROM runner_orders
 WHERE cancellation IS NULL
 ;
-
 
 
 -- 7. What is the successful delivery percentage for each runner?
@@ -202,8 +201,28 @@ GROUP BY runner_id
 -- C.Ingredient Optimisation
 
 -- 1.What are the standard ingredients for each pizza?
+
+
+
+
+
 -- 2. What was the most commonly added extra?
+
+
+
+
+
+
+
 -- 3.What was the most common exclusion?
+
+
+
+
+
+
+
+
 -- 4. Generate an order item for each record in the customers_orders table in the format of one of the following:
 --      Meat Lovers
 --      Meat Lovers - Exclude Beef
@@ -212,6 +231,26 @@ GROUP BY runner_id
 -- 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
 --     For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
 -- 6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 -- D. Pricing and Ratings
