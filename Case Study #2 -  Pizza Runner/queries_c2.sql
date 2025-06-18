@@ -200,28 +200,12 @@ GROUP BY runner_id
 
 -- C.Ingredient Optimisation
 
--- 1.What are the standard ingredients for each pizza?
-
-
-
-
+-- 1.What are the standard ingredients for each pizza? 
+-- ,No pueod hacerla sin una versión superior de SQL SERVER
 
 -- 2. What was the most commonly added extra?
 
-
-
-
-
-
-
 -- 3.What was the most common exclusion?
-
-
-
-
-
-
-
 
 -- 4. Generate an order item for each record in the customers_orders table in the format of one of the following:
 --      Meat Lovers
@@ -238,28 +222,64 @@ GROUP BY runner_id
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 -- D. Pricing and Ratings
 -- 1. If a Meat Lovers pizza costs $12 and Vegetarian costs $10 and there were no charges for changes - how much money has Pizza Runner made so far if there are no delivery fees?
+
+SELECT pn.pizza_name,
+    SUM((CASE
+        WHEN co.pizza_id = 1 THEN 1*12
+        ELSE 1*10
+    END)) AS total_price_per_pizza 
+FROM customer_orders AS co
+INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
+INNER JOIN pizza_names AS pn ON co.pizza_id = pn.pizza_id
+WHERE ro.cancellation IS NULL
+GROUP BY pn.pizza_name
+;
+
+
 
 -- 2. What if there was an additional $1 charge for any pizza extras?
 --  Add cheese is $1 extra
 
+SELECT co.order_id, SUM((CASE
+            WHEN co.pizza_id = 1 AND co.extras IS NOT NULL THEN 12*1+1
+            WHEN co.pizza_id = 2 AND co.extras IS NOT NULL THEN 10*1+1
+            WHEN co.pizza_id = 1 AND co.extras IS  NULL THEN 12*1
+            ELSE 10*1
+        END)) AS total_price_with_extras
+
+FROM customer_orders AS co
+INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
+WHERE ro.cancellation IS NULL
+GROUP BY co.order_id
+;
+
+-- Me faltaría saber si son 2 o más extras pero no puedo ponerlo por la versión del SQL.
+
+
 --3. The Pizza Runner team now wants to add an additional ratings system that allows customers to rate their runner, how would you design an additional table for this new dataset - generate a schema for this new table and insert your own data for ratings for each successful customer order between 1 to 5.
+
+CREATE TABLE rating_runner(
+    "runner_id" INTEGER,
+    "order_id" INTEGER,
+    "customer_id" INTEGER,
+    "rating" TINYINT NOT NULL CHECK (rating between 1 and 5),
+    "rating_date" DATETIME DEFAULT GETDATE()
+);
+
+INSERT INTO rating_runner 
+    ("runner_id","order_id","customer_id","rating","rating_date")
+VALUES
+    (1,1,101,3,'2021-01-01'),
+    (1,2,101,5,'2021-01-01'),
+    (1,3,102,3,'2021-01-03'),
+    (2,4,103,2,'2021-01-04'),
+    (3,5,104,5,'2021-01-08'),
+    (2,7,105,5,'2021-01-08'),
+    (2,8,102,5,'2021-01-10'),
+    (1,10,104,5,'2021-01-11');
+
 
 -- 4. Using your newly generated table - can you join all of the information together to form a table which has the following information for successful deliveries?
 --  customer_id
@@ -274,6 +294,11 @@ GROUP BY runner_id
 --  Total number of pizzas
 
 -- 5. If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after these deliveries?
+
+
+
+
+
 
 
 --E. Bonus Questions
