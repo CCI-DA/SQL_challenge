@@ -1,10 +1,12 @@
 ## 8 week SQL Challenge 
 ### Description
->🧠 As part of my self-learning journey and to showcase my SQL skills, I decided to take on a challenge I had been meaning to complete for some time: the 8 Week SQL Challenge. My goal is to solve one of the eight case studies each week, progressively building both my technical knowledge and problem-solving abilities.
+>🎯 My goal: to complete the 8 Week SQL Challenge, solving one case study per week and progressively strengthening both my SQL skills and problem-solving abilities.
 
->👩🏼‍🎓 Everything I’ve learned so far has been self-taught, and while I know there may be mistakes along the way, I see this experience as a valuable opportunity for continuous learning and personal growth. I’m confident that as the weeks progress, both the complexity of my solutions and the depth of my understanding will steadily improve.
+>🏋🏼‍♀️ But this is more than just a technical challenge—it's also a personal one. It’s a way to push my own boundaries, stay committed to a learning path, and prove to myself that with consistency and discipline, I can go beyond what I thought possible.
 
->🏋🏼‍♀️ This project is also a personal challenge—a way to push my own boundaries, test my commitment, and prove to myself that with consistency and dedication, I can accomplish whatever I set out to do—and even more.
+>👩🏼‍🎓 Everything I’ve learned so far has been self-taught. I’ve spent time exploring, making mistakes, and figuring things out on my own. That’s why this project feels especially meaningful: it represents the mindset of continuous growth, curiosity, and the willingness to improve week after week.
+
+>🧠 I had been meaning to take on this challenge for a while, and now feels like the right time. Sharing this publicly is also a form of accountability—and a way to connect with others who are learning, building, and challenging themselves too.
 
 ### What is the 8 Week SQL Challenge?
 >The 8 Week SQL Challenge is a **data analytics project** created by Danny Ma that presents eight unique **business scenarios** across different industries. 
