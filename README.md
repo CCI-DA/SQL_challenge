@@ -14,7 +14,14 @@
 > <https://8weeksqlchallenge.com/>
 
 ### Cases
-> 1. [📁 Case Study #1 – Danny's Diner](./Case%20Study%20%231%20-%20Dannys%20Dinner)
+> 1.
+> 2.
+> 3.
+> 4.
+> 5.
+> 6.
+> 7.
+> 8.
 
 ### Setup and Tools
 > 1. Developed using Visual Studio Code (VS Code).

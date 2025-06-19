@@ -23,8 +23,6 @@
 > 3. Window Functions for ranking
 > 4. Table Joins
 
-
-
 ### Setup and Tools
 > 1. Developed using Visual Studio Code (VS Code).
 > 2. Written in Transact-SQL (T-SQL).
