@@ -1,10 +1,10 @@
 ## 8 week SQL Challenge 
 ### Description
->As part of my self-learning journey and to showcase my SQL skills, I decided to take on a challenge I had been meaning to complete for a while: the 8 Week SQL Challenge. Each week, I will solve one of the eight case studies provided by the platform.
+>🧠 As part of my self-learning journey and to showcase my SQL skills, I decided to take on a challenge I had been meaning to complete for some time: the 8 Week SQL Challenge. My goal is to solve one of the eight case studies each week, progressively building both my technical knowledge and problem-solving abilities.
 
->Everything I have learned so far has been **self-taught**, and I’m aware that there may be mistakes along the way. However, I view this not only as a practical exercise but also as an **opportunity for continuous learning and growth**. I’m confident that there will be a noticeable progression in both complexity and in the development of my own skills and knowledge from the first challenge to the last.
+>👩🏼‍🎓 Everything I’ve learned so far has been self-taught, and while I know there may be mistakes along the way, I see this experience as a valuable opportunity for continuous learning and personal growth. I’m confident that as the weeks progress, both the complexity of my solutions and the depth of my understanding will steadily improve.
 
-> For me, this initiative is also a **personal challenge**—a way to push my limits, prove to myself what I’m capable of, and demonstrate that with dedication, I can achieve anything I set my mind to—and more.
+>🏋🏼‍♀️ This project is also a personal challenge—a way to push my own boundaries, test my commitment, and prove to myself that with consistency and dedication, I can accomplish whatever I set out to do—and even more.
 
 ### What is the 8 Week SQL Challenge?
 >The 8 Week SQL Challenge is a **data analytics project** created by Danny Ma that presents eight unique **business scenarios** across different industries. 
@@ -12,9 +12,10 @@
 > <https://8weeksqlchallenge.com/>
 
 ### Setup and Tools
-> 1. Developed using Visual Studio Code (VSC)
-> 2. Connected to SQL Server through SQL Server Management Studio (SSMS)
-> 3. Version controlled with GitHub
+> 1. Developed using Visual Studio Code (VS Code).
+> 2. Written in Transact-SQL (T-SQL).
+> 3. Connected to SQL Server through SQL Server Management Studio (SSMS).
+> 4. Version control managed with GitHub.
 
 ### How to Run
 > 1. Open the .sql files in Visual Studio Code or SSMS.
