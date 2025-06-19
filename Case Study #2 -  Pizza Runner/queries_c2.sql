@@ -238,7 +238,6 @@ GROUP BY pn.pizza_name
 ;
 
 
-
 -- 2. What if there was an additional $1 charge for any pizza extras?
 --  Add cheese is $1 extra
 
@@ -260,25 +259,25 @@ GROUP BY co.order_id
 
 --3. The Pizza Runner team now wants to add an additional ratings system that allows customers to rate their runner, how would you design an additional table for this new dataset - generate a schema for this new table and insert your own data for ratings for each successful customer order between 1 to 5.
 
-CREATE TABLE rating_runner(
-    "runner_id" INTEGER,
-    "order_id" INTEGER,
-    "customer_id" INTEGER,
-    "rating" TINYINT NOT NULL CHECK (rating between 1 and 5),
-    "rating_date" DATETIME DEFAULT GETDATE()
-);
+--CREATE TABLE rating_runner(
+    --"runner_id" INTEGER,
+   -- "order_id" INTEGER,
+   -- "customer_id" INTEGER,
+   -- "rating" TINYINT NOT NULL CHECK (rating between 1 and 5),
+  --  "rating_date" DATETIME DEFAULT GETDATE()
+--);
 
-INSERT INTO rating_runner 
-    ("runner_id","order_id","customer_id","rating","rating_date")
-VALUES
-    (1,1,101,3,'2021-01-01'),
-    (1,2,101,5,'2021-01-01'),
-    (1,3,102,3,'2021-01-03'),
-    (2,4,103,2,'2021-01-04'),
-    (3,5,104,5,'2021-01-08'),
-    (2,7,105,5,'2021-01-08'),
-    (2,8,102,5,'2021-01-10'),
-    (1,10,104,5,'2021-01-11');
+--INSERT INTO rating_runner 
+  --  ("runner_id","order_id","customer_id","rating","rating_date")
+--VALUES
+  -- (1,1,101,3,'2021-01-01'),
+   -- (1,2,101,5,'2021-01-01'),
+   -- (1,3,102,3,'2021-01-03'),
+    --(2,4,103,2,'2021-01-04'),
+   -- (3,5,104,5,'2021-01-08'),
+   -- (2,7,105,5,'2021-01-08'),
+   -- (2,8,102,5,'2021-01-10'),
+   -- (1,10,104,5,'2021-01-11');
 
 
 -- 4. Using your newly generated table - can you join all of the information together to form a table which has the following information for successful deliveries?
@@ -293,12 +292,49 @@ VALUES
 --  Average speed
 --  Total number of pizzas
 
+WITH pizza_counts AS (
+    SELECT   order_id, customer_id, COUNT(*) AS total_pizzas
+    FROM customer_orders
+    GROUP BY order_id, customer_id )
+
+SELECT  DISTINCT co.order_id,
+    co.customer_id,
+    ro.runner_id,
+    rr.rating,
+    co.order_time,
+    ro.pickup_time,
+    DATEDIFF(MINUTE, co.order_time, ro.pickup_time) AS time_btw_order_and_pickup,
+    ro.duration_min,
+    TRY_CAST(ro.distance_km AS FLOAT) / TRY_CAST(ro.duration_min AS FLOAT) * 60 AS avg_speed_km_hour,
+    pc.total_pizzas
+FROM runner_orders ro
+INNER JOIN customer_orders co ON ro.order_id = co.order_id
+INNER JOIN pizza_counts pc ON co.order_id = pc.order_id
+INNER JOIN rating_runner rr ON ro.order_id = rr.order_id 
+WHERE ro.cancellation IS NULL;
+;
+
+
 -- 5. If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after these deliveries?
+WITH price_per_order AS (
+    SELECT 
+        co.order_id,
+        SUM(CASE 
+            WHEN co.pizza_id = 1 THEN 12
+            ELSE 10
+        END) AS total_revenue,
+        CAST(ro.distance_km AS FLOAT) * 0.30 AS total_runner_payment
+    FROM customer_orders AS co
+    JOIN runner_orders AS ro ON co.order_id = ro.order_id
+    WHERE ro.cancellation IS NULL
+    GROUP BY co.order_id, ro.distance_km
+)
 
-
-
-
-
+SELECT 
+    SUM(total_revenue) AS total_revenue,
+    SUM(total_runner_payment) AS total_runner_payment,
+    SUM(total_revenue - total_runner_payment) AS profit
+FROM price_per_order;
 
 
 --E. Bonus Questions
