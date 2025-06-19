@@ -36,5 +36,5 @@
 > 1. Open the .sql files in Visual Studio Code or SSMS.
 > 2. Execute the scripts against your SQL Server instance.
 
-# License
+### License
 >This project is for personal learning and practice.
