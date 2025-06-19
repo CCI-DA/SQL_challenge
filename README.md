@@ -9,9 +9,12 @@
 >🧠 I had been meaning to take on this challenge for a while, and now feels like the right time. Sharing this publicly is also a form of accountability—and a way to connect with others who are learning, building, and challenging themselves too.
 
 ### What is the 8 Week SQL Challenge?
->The 8 Week SQL Challenge is a **data analytics project** created by Danny Ma that presents eight unique **business scenarios** across different industries. 
+>✅ The 8 Week SQL Challenge is a **data analytics project** created by Danny Ma that presents eight unique **business scenarios** across different industries. 
 >Each case study includes a **database schema** and a set of **real-world business questions** to be answered using SQL. It’s designed to **simulate practical data challenges** and test a wide range of SQL skills—from basic queries to complex data transformations and analytical thinking.
 > <https://8weeksqlchallenge.com/>
+
+### Cases
+> 1. [📁 Case Study #1 – Danny's Diner](./Case%20Study%20%231%20-%20Dannys%20Dinner)
 
 ### Setup and Tools
 > 1. Developed using Visual Studio Code (VS Code).
@@ -23,3 +26,5 @@
 > 1. Open the .sql files in Visual Studio Code or SSMS.
 > 2. Execute the scripts against your SQL Server instance.
 
+# License
+>This project is for personal learning and practice.

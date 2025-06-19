@@ -18,17 +18,18 @@
 > You can refer to the entity relationship diagram in ER_Model_Case.png.
 
 ### What to spect
->Common Table Expressions
-> Group By Aggregates
->Window Functions for ranking
-> Table Joins
+> 1. Common Table Expressions
+> 2. Group By Aggregates
+> 3. Window Functions for ranking
+> 4. Table Joins
 
 
 
 ### Setup and Tools
-> 1. Developed using Visual Studio Code (VSC)
-> 2. Connected to SQL Server through SQL Server Management Studio (SSMS)
-> 3. Version controlled with GitHub
+> 1. Developed using Visual Studio Code (VS Code).
+> 2. Written in Transact-SQL (T-SQL).
+> 3. Connected to SQL Server through SQL Server Management Studio (SSMS).
+> 4. Version control managed with GitHub.
 
 ### How to Run
 > 1. Open the .sql files in Visual Studio Code or SSMS.
