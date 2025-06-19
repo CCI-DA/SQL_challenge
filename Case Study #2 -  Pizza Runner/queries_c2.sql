@@ -60,10 +60,10 @@ ORDER BY max_number_pizzas_delivered DESC
 
 WITH pizza_delivered_changes AS(
      SELECT co.customer_id ,
-    (CASE
-        WHEN co.exclusions IS NULL AND co.extras IS NULL THEN 'No changes'
-        ELSE 'At least 1 change'
-    END) AS changes
+        (CASE
+            WHEN co.exclusions IS NULL AND co.extras IS NULL THEN 'No changes'
+            ELSE 'At least 1 change'
+        END) AS changes
     FROM customer_orders AS co
     INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
     WHERE ro.cancellation IS NULL
@@ -129,7 +129,11 @@ GROUP BY ro.runner_id
 -- 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
 
 WITH time_to_prepare AS(
-    SELECT  co.order_id, co.pizza_id, DATEDIFF(MINUTE,co.order_time, ro.pickup_time) AS time_to_prepare
+    SELECT 
+        co.order_id,
+        co.pizza_id, 
+        DATEDIFF(MINUTE,co.order_time, ro.pickup_time) AS time_to_prepare
+
     FROM customer_orders AS co
     INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
     WHERE ro.cancellation IS NULL
@@ -162,8 +166,9 @@ GROUP BY customer_id
 
 -- 5. What was the difference between the longest and shortest delivery times for all orders?
 
-SELECT MIN(duration_min) AS min_duration, MAX(duration_min) AS max_duration , 
-    (MAX(CAST(duration_min AS INT))- MIN(CAST(duration_min AS INT))) AS difference_btw_delivery_times
+SELECT MIN(duration_min) AS min_duration,
+       MAX(duration_min) AS max_duration , 
+      (MAX(CAST(duration_min AS INT))- MIN(CAST(duration_min AS INT))) AS difference_btw_delivery_times
 FROM runner_orders ro
 INNER JOIN customer_orders AS co ON ro.order_id = co.order_id
 WHERE ro.cancellation IS NULL
@@ -173,7 +178,9 @@ WHERE ro.cancellation IS NULL
 -- 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
 -- velocity = distance traveled / time taken
 
-SELECT runner_id, order_id, (CAST(distance_km AS FLOAT)/CAST(duration_min AS FLOAT)*60) AS avg_speed_km_hour
+SELECT runner_id,
+       order_id,
+       (CAST(distance_km AS FLOAT)/CAST(duration_min AS FLOAT)*60) AS avg_speed_km_hour
 FROM runner_orders
 WHERE cancellation IS NULL
 ;
@@ -187,7 +194,8 @@ WITH count_orders AS(
             WHEN cancellation IS NULL THEN 1
             ELSE 0
         END) AS clasification_orders ,
-         runner_id, order_id
+        runner_id,
+        order_id
     FROM runner_orders
 )
 
@@ -241,7 +249,8 @@ GROUP BY pn.pizza_name
 -- 2. What if there was an additional $1 charge for any pizza extras?
 --  Add cheese is $1 extra
 
-SELECT co.order_id, SUM((CASE
+SELECT co.order_id,
+    SUM((CASE
             WHEN co.pizza_id = 1 AND co.extras IS NOT NULL THEN 12*1+1
             WHEN co.pizza_id = 2 AND co.extras IS NOT NULL THEN 10*1+1
             WHEN co.pizza_id = 1 AND co.extras IS  NULL THEN 12*1
@@ -338,4 +347,19 @@ FROM price_per_order;
 
 
 --E. Bonus Questions
---If Danny wants to expand his range of pizzas - how would this impact the existing data design? Write an INSERT statement to demonstrate what would happen if a new Supreme pizza with all the toppings was added to the Pizza Runner menu?
+--If Danny wants to expand his range of pizzas - how would this impact the existing data design? 
+--Write an INSERT statement to demonstrate what would happen if a new Supreme pizza with all the toppings was added to the Pizza Runner menu?
+
+--INSERT INTO pizza_names
+  --  ("pizza_id","pizza_name")
+--VALUES
+   -- (3,'Supreme')
+-- ;
+
+--INSERT INTO pizza_recipes
+   -- ("pizza_id","toppings")
+-- VALUES 
+  --  (3, '1,2,3,4,5,6,7,8,9,10')
+;
+
+-- It has a direct impact on the database design.
