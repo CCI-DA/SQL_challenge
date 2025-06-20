@@ -209,20 +209,79 @@ GROUP BY runner_id
 -- C.Ingredient Optimisation
 
 -- 1.What are the standard ingredients for each pizza? 
--- ,No pueod hacerla sin una versión superior de SQL SERVER
+WITH toppings_split AS(
+    SELECT pizza_id,  CAST(splt.value AS INT) AS toppings_splt
+    FROM pizza_recipes 
+    CROSS APPLY string_split(toppings, ',') AS splt
+)
+
+SELECT pn.pizza_name, topping_name
+FROM toppings_split AS ts
+INNER JOIN pizza_toppings AS pt ON ts.toppings_splt = pt.topping_id
+INNER JOIN pizza_names AS pn ON pn.pizza_id = ts.pizza_id
+;
+
 
 -- 2. What was the most commonly added extra?
 
+WITH toppings_split AS(
+    SELECT CAST(splt.value AS INT) AS extras_splt
+    FROM customer_orders
+    CROSS APPLY string_split(extras, ',') AS splt
+)
+
+SELECT TOP 1
+    pt.topping_name,
+    COUNT(extras_splt) as times_added
+FROM toppings_split AS ts
+INNER JOIN pizza_toppings AS pt ON ts.extras_splt = pt.topping_id
+GROUP BY pt.topping_name
+ORDER BY times_added DESC
+;
+
+
 -- 3.What was the most common exclusion?
+
+WITH toppings_split AS(
+    SELECT CAST(splt.value AS INT) AS exclusions_splt
+    FROM customer_orders
+    CROSS APPLY string_split(exclusions, ',') AS splt
+)
+
+SELECT TOP 1
+    pt.topping_name,
+    COUNT(exclusions_splt) as times_added
+FROM toppings_split AS ts
+INNER JOIN pizza_toppings AS pt ON ts.exclusions_splt = pt.topping_id
+GROUP BY pt.topping_name
+ORDER BY times_added DESC
+;
+
 
 -- 4. Generate an order item for each record in the customers_orders table in the format of one of the following:
 --      Meat Lovers
 --      Meat Lovers - Exclude Beef
 --      Meat Lovers - Extra Bacon
 --      Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers
+
+
+
+
+
 -- 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
 --     For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
+
+
+
+
+
 -- 6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
+
+
+
+
+
+
 
 
 
@@ -247,23 +306,8 @@ GROUP BY pn.pizza_name
 
 
 -- 2. What if there was an additional $1 charge for any pizza extras?
---  Add cheese is $1 extra
 
-SELECT co.order_id,
-    SUM((CASE
-            WHEN co.pizza_id = 1 AND co.extras IS NOT NULL THEN 12*1+1
-            WHEN co.pizza_id = 2 AND co.extras IS NOT NULL THEN 10*1+1
-            WHEN co.pizza_id = 1 AND co.extras IS  NULL THEN 12*1
-            ELSE 10*1
-        END)) AS total_price_with_extras
 
-FROM customer_orders AS co
-INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
-WHERE ro.cancellation IS NULL
-GROUP BY co.order_id
-;
-
--- Me faltaría saber si son 2 o más extras pero no puedo ponerlo por la versión del SQL.
 
 
 --3. The Pizza Runner team now wants to add an additional ratings system that allows customers to rate their runner, how would you design an additional table for this new dataset - generate a schema for this new table and insert your own data for ratings for each successful customer order between 1 to 5.
@@ -363,3 +407,22 @@ FROM price_per_order;
 ;
 
 -- It has a direct impact on the database design.
+
+WITH split_toppings AS(
+    SELECT co.order_id, co.pizza_id , CAST(stp.value AS INT) AS toppings_split
+    FROM customer_orders AS co
+    INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
+    CROSS APPLY string_split(co.extras, ',') AS stp
+    WHERE ro.cancellation IS NULL 
+)
+
+SELECT DISTINCT order_id,
+    SUM((CASE
+            WHEN pizza_id = 1 AND toppings_split IS NOT NULL THEN 12+1
+            WHEN pizza_id = 2 AND toppings_split IS NOT NULL THEN 10+1
+            WHEN pizza_id = 1 AND toppings_split IS  NULL THEN 12
+            ELSE 10
+        END)) AS total_price_with_extras
+FROM split_toppings
+GROUP BY order_id
+;
