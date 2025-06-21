@@ -277,6 +277,67 @@ ORDER BY times_added DESC
 
 -- 6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
 
+WITH ingredients_per_pizza AS(
+    SELECT pizza_id, CAST(splt.value AS INT) AS ingredients
+    FROM pizza_recipes
+    CROSS APPLY string_split(toppings, ',') AS splt
+),
+    count_total_ingredients AS(
+        SELECT  co.order_id,
+                ipp.ingredients,
+                pt.topping_name,
+                COUNT(ingredients) AS count_ingredients
+
+        FROM ingredients_per_pizza AS ipp
+        INNER JOIN customer_orders AS co ON ipp.pizza_id = co.pizza_id
+        INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
+        INNER JOIN pizza_toppings AS pt ON ipp.ingredients = pt.topping_id
+        WHERE ro.cancellation IS NULL
+        GROUP BY co.order_id ,ipp.ingredients,topping_name
+       
+)
+SELECT topping_name, SUM(count_ingredients) AS suma_total
+FROM count_total_ingredients
+GROUP BY topping_name
+ORDER BY suma_total DESC
+;
+
+
+WITH base_ingredients AS (
+    SELECT co.order_id, co.pizza_id, pi.ingredient_id
+    FROM customer_orders co
+    JOIN pizza_ingredients pi ON co.pizza_id = pi.pizza_id
+),
+excluded AS (
+    SELECT order_id, TRIM(value) AS ingredient_id
+    FROM customer_orders
+    CROSS APPLY string_split(exclusions, ',')
+    WHERE exclusions IS NOT NULL
+),
+extras AS (
+    SELECT order_id, TRIM(value) AS ingredient_id
+    FROM customer_orders
+    CROSS APPLY string_split(extras, ',')
+    WHERE extras IS NOT NULL
+),
+final_ingredients AS (
+    -- Ingredientes base sin los excluidos
+    SELECT b.order_id, b.ingredient_id
+    FROM base_ingredients b
+    LEFT JOIN excluded e 
+        ON b.order_id = e.order_id AND b.ingredient_id = e.ingredient_id
+    WHERE e.ingredient_id IS NULL
+
+    UNION ALL
+
+    -- Añadir los extras (aunque estén duplicados)
+    SELECT order_id, ingredient_id
+    FROM extras
+)
+SELECT order_id, STRING_AGG(ingredient_id, ', ') AS final_ingredients
+FROM final_ingredients
+GROUP BY order_id
+ORDER BY order_id;
 
 
 
