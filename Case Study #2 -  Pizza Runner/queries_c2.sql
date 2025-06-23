@@ -278,14 +278,53 @@ ORDER BY times_added DESC
 
 -- 6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
 
+WITH base_recipe_list AS (
+    SELECT pr.pizza_id, TRY_CAST(s.value AS INT) AS topping
+    FROM pizza_recipes AS pr
+    CROSS APPLY STRING_SPLIT(pr.toppings, ',') AS s
+),
+delivered_orders AS (
+    SELECT co.order_id, co.pizza_id
+    FROM customer_orders co
+    JOIN runner_orders ro ON co.order_id = ro.order_id
+    WHERE ro.cancellation IS NULL
+),
+base_toppings_per_order AS (
+    SELECT do.order_id, brl.topping
+    FROM delivered_orders do
+    JOIN base_recipe_list brl ON do.pizza_id = brl.pizza_id
+),
+exclusions_list AS (
+    SELECT co.order_id, TRY_CAST(s.value AS INT) AS exclusion
+    FROM customer_orders co
+    CROSS APPLY STRING_SPLIT(co.exclusions, ',') AS s
+    WHERE co.exclusions IS NOT NULL
+),
+extras_list AS (
+    SELECT co.order_id, TRY_CAST(s.value AS INT) AS extra
+    FROM customer_orders co
+    CROSS APPLY STRING_SPLIT(co.extras, ',') AS s
+    WHERE co.extras IS NOT NULL
+),
+-- Final toppings = base - exclusions
+final_base_toppings AS (
+    SELECT bto.order_id, bto.topping
+    FROM base_toppings_per_order bto
+    LEFT JOIN exclusions_list el ON bto.order_id = el.order_id AND bto.topping = el.exclusion
+    WHERE el.exclusion IS NULL
+),
+-- Adding extras to the final toppings
+all_toppings AS (
+    SELECT topping FROM final_base_toppings
+    UNION ALL
+    SELECT extra AS topping FROM extras_list
+)
 
-
-
-
-
-
-
-
+SELECT topping, COUNT(*) AS total_uses
+FROM all_toppings
+GROUP BY topping
+ORDER BY total_uses DESC
+;
 
 
 -- D. Pricing and Ratings
