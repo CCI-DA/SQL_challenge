@@ -264,67 +264,174 @@ ORDER BY times_added DESC
 --      Meat Lovers - Extra Bacon
 --      Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers
 
+WITH pizza_type AS (
+        SELECT co.order_id, pn.pizza_name
+        FROM customer_orders AS co 
+        INNER JOIN pizza_names AS pn ON co.pizza_id = pn.pizza_id
+        INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
+        WHERE ro.cancellation IS NULL
+),
+    extras_list AS(
+        SELECT co.order_id, pt.topping_name
+        FROM customer_orders AS co
+        CROSS APPLY string_split(extras , ',') AS s
+        INNER JOIN pizza_toppings AS pt ON TRY_CAST(s.value AS INT) = pt.topping_id
+        WHERE extras IS NOT NULL
+),
+    exclusion_list AS(
+        SELECT  co.order_id, pt.topping_name
+        FROM customer_orders AS co
+        CROSS APPLY string_split(exclusions , ',') AS s
+        INNER JOIN pizza_toppings AS pt ON TRY_CAST(s.value AS INT) = pt.topping_id
+        WHERE exclusions IS NOT NULL
+),
+    combined AS(
+        SELECT 
+            pt.order_id,
+            pt.pizza_name,
+            STRING_AGG('Exclude ' + el.topping_name, ', ') AS excludes,
+            STRING_AGG( 'Extra ' + ex.topping_name, ', ') AS extras
+        FROM pizza_type pt
+        LEFT JOIN exclusion_list el ON pt.order_id = el.order_id
+        LEFT JOIN extras_list ex ON pt.order_id = ex.order_id
+        GROUP BY pt.order_id, pt.pizza_name
+        )
 
-
-
+SELECT 
+    order_id,
+    CASE
+        WHEN excludes IS NULL AND extras IS NULL THEN pizza_name
+        WHEN excludes IS NOT NULL AND extras IS NULL THEN pizza_name + ' - ' + excludes
+        WHEN excludes IS NULL AND extras IS NOT NULL THEN pizza_name + ' - ' + extras
+        ELSE pizza_name + ' - ' + excludes + ' - ' + extras
+    END AS order_item
+FROM combined
+ORDER BY order_id
+;
 
 
 -- 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
 --     For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
 
-
+WITH base_toppings AS (
+    SELECT co.order_id, pr.pizza_id, CAST(s.value AS INT) AS topping_id
+    FROM customer_orders co
+    JOIN pizza_recipes pr ON co.pizza_id = pr.pizza_id
+    CROSS APPLY string_split(pr.toppings, ',') s
+),
+extra_toppings AS (
+    SELECT co.order_id, CAST(s.value AS INT) AS topping_id
+    FROM customer_orders co
+    CROSS APPLY string_split(co.extras, ',') s
+),
+combined_toppings AS (
+    SELECT bt.order_id, bt.topping_id, 'base' AS source
+    FROM base_toppings bt
+    UNION ALL
+    SELECT et.order_id, et.topping_id, 'extra' AS source
+    FROM extra_toppings et
+),
+tagged_toppings AS (
+    SELECT 
+        ct.order_id,
+        ct.topping_id,
+        t.topping_name,
+        COUNT(*) OVER(PARTITION BY ct.order_id, ct.topping_id) AS count_per_topping
+    FROM combined_toppings ct
+    JOIN pizza_toppings t ON ct.topping_id = t.topping_id
+),
+formatted_toppings AS (
+    SELECT 
+        order_id,
+        CASE 
+            WHEN count_per_topping = 2 THEN '2x' + topping_name
+            ELSE topping_name
+        END AS topping_display
+    FROM tagged_toppings
+    GROUP BY order_id, topping_name, count_per_topping
+),
+final_output AS (
+    SELECT 
+        co.order_id,
+        pn.pizza_name,
+        STRING_AGG(ft.topping_display, ', ') WITHIN GROUP (ORDER BY ft.topping_display) AS ingredient_list
+    FROM customer_orders co
+    JOIN pizza_names pn ON co.pizza_id = pn.pizza_id
+    JOIN formatted_toppings ft ON co.order_id = ft.order_id
+    GROUP BY co.order_id, pn.pizza_name
+)
+SELECT 
+    pizza_name + ': ' + ingredient_list AS order_description
+FROM final_output
+ORDER BY pizza_name;
 
 
 
 -- 6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
 
-WITH base_recipe_list AS (
-    SELECT pr.pizza_id, TRY_CAST(s.value AS INT) AS topping
-    FROM pizza_recipes AS pr
-    CROSS APPLY STRING_SPLIT(pr.toppings, ',') AS s
-),
-delivered_orders AS (
-    SELECT co.order_id, co.pizza_id
+WITH delivered_orders AS (
+    SELECT 
+        co.order_id, 
+        co.pizza_id, 
+        co.extras, 
+        co.exclusions
     FROM customer_orders co
     JOIN runner_orders ro ON co.order_id = ro.order_id
     WHERE ro.cancellation IS NULL
 ),
+base_toppings AS (
+    SELECT 
+        pr.pizza_id, 
+        TRY_CAST(s.value AS INT) AS topping
+    FROM pizza_recipes pr
+    CROSS APPLY STRING_SPLIT(pr.toppings, ',') AS s
+),
 base_toppings_per_order AS (
-    SELECT do.order_id, brl.topping
-    FROM delivered_orders do
-    JOIN base_recipe_list brl ON do.pizza_id = brl.pizza_id
+    SELECT 
+        d.order_id, 
+        bt.topping
+    FROM delivered_orders d
+    JOIN base_toppings bt ON d.pizza_id = bt.pizza_id
 ),
-exclusions_list AS (
-    SELECT co.order_id, TRY_CAST(s.value AS INT) AS exclusion
-    FROM customer_orders co
-    CROSS APPLY STRING_SPLIT(co.exclusions, ',') AS s
-    WHERE co.exclusions IS NOT NULL
+exclusions_per_order AS (
+    SELECT 
+        d.order_id, 
+        TRY_CAST(s.value AS INT) AS exclusion
+    FROM delivered_orders d
+    CROSS APPLY STRING_SPLIT(d.exclusions, ',') AS s
+    WHERE d.exclusions IS NOT NULL
 ),
-extras_list AS (
-    SELECT co.order_id, TRY_CAST(s.value AS INT) AS extra
-    FROM customer_orders co
-    CROSS APPLY STRING_SPLIT(co.extras, ',') AS s
-    WHERE co.extras IS NOT NULL
+extras_per_order AS (
+    SELECT 
+        d.order_id, 
+        TRY_CAST(s.value AS INT) AS extra
+    FROM delivered_orders d
+    CROSS APPLY STRING_SPLIT(d.extras, ',') AS s
+    WHERE d.extras IS NOT NULL
 ),
--- Final toppings = base - exclusions
 final_base_toppings AS (
-    SELECT bto.order_id, bto.topping
+    SELECT 
+        bto.order_id, 
+        bto.topping
     FROM base_toppings_per_order bto
-    LEFT JOIN exclusions_list el ON bto.order_id = el.order_id AND bto.topping = el.exclusion
-    WHERE el.exclusion IS NULL
+    LEFT JOIN exclusions_per_order e
+        ON bto.order_id = e.order_id 
+       AND bto.topping = e.exclusion
+    WHERE e.exclusion IS NULL
 ),
--- Adding extras to the final toppings
 all_toppings AS (
     SELECT topping FROM final_base_toppings
     UNION ALL
-    SELECT extra AS topping FROM extras_list
+    SELECT extra FROM extras_per_order
 )
-
-SELECT topping, COUNT(*) AS total_uses
+SELECT 
+    topping, 
+    COUNT(*) AS total_uses
 FROM all_toppings
 GROUP BY topping
 ORDER BY total_uses DESC
 ;
+
 
 
 -- D. Pricing and Ratings
