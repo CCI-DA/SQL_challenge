@@ -268,6 +268,7 @@ ORDER BY times_added DESC
 
 
 
+
 -- 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
 --     For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
 
@@ -276,69 +277,6 @@ ORDER BY times_added DESC
 
 
 -- 6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
-
-WITH ingredients_per_pizza AS(
-    SELECT pizza_id, CAST(splt.value AS INT) AS ingredients
-    FROM pizza_recipes
-    CROSS APPLY string_split(toppings, ',') AS splt
-),
-    count_total_ingredients AS(
-        SELECT  co.order_id,
-                ipp.ingredients,
-                pt.topping_name,
-                COUNT(ingredients) AS count_ingredients
-
-        FROM ingredients_per_pizza AS ipp
-        INNER JOIN customer_orders AS co ON ipp.pizza_id = co.pizza_id
-        INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
-        INNER JOIN pizza_toppings AS pt ON ipp.ingredients = pt.topping_id
-        WHERE ro.cancellation IS NULL
-        GROUP BY co.order_id ,ipp.ingredients,topping_name
-       
-)
-SELECT topping_name, SUM(count_ingredients) AS suma_total
-FROM count_total_ingredients
-GROUP BY topping_name
-ORDER BY suma_total DESC
-;
-
-
-WITH base_ingredients AS (
-    SELECT co.order_id, co.pizza_id, pi.ingredient_id
-    FROM customer_orders co
-    JOIN pizza_ingredients pi ON co.pizza_id = pi.pizza_id
-),
-excluded AS (
-    SELECT order_id, TRIM(value) AS ingredient_id
-    FROM customer_orders
-    CROSS APPLY string_split(exclusions, ',')
-    WHERE exclusions IS NOT NULL
-),
-extras AS (
-    SELECT order_id, TRIM(value) AS ingredient_id
-    FROM customer_orders
-    CROSS APPLY string_split(extras, ',')
-    WHERE extras IS NOT NULL
-),
-final_ingredients AS (
-    -- Ingredientes base sin los excluidos
-    SELECT b.order_id, b.ingredient_id
-    FROM base_ingredients b
-    LEFT JOIN excluded e 
-        ON b.order_id = e.order_id AND b.ingredient_id = e.ingredient_id
-    WHERE e.ingredient_id IS NULL
-
-    UNION ALL
-
-    -- Añadir los extras (aunque estén duplicados)
-    SELECT order_id, ingredient_id
-    FROM extras
-)
-SELECT order_id, STRING_AGG(ingredient_id, ', ') AS final_ingredients
-FROM final_ingredients
-GROUP BY order_id
-ORDER BY order_id;
-
 
 
 
@@ -355,8 +293,8 @@ ORDER BY order_id;
 
 SELECT pn.pizza_name,
     SUM((CASE
-        WHEN co.pizza_id = 1 THEN 1*12
-        ELSE 1*10
+        WHEN co.pizza_id = 1 THEN 12
+        ELSE 10
     END)) AS total_price_per_pizza 
 FROM customer_orders AS co
 INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
@@ -368,7 +306,40 @@ GROUP BY pn.pizza_name
 
 -- 2. What if there was an additional $1 charge for any pizza extras?
 
+WITH extras_count AS(
+        SELECT 
+            co.order_id,
+            co.pizza_id,
+            COUNT(*) AS num_extras
+        FROM customer_orders AS co
+        CROSS APPLY string_split(extras, ',') AS s
+        WHERE extras IS NOT NULL
+        GROUP BY co.order_id,co.pizza_id
+),
+    base_prices AS (
+        SELECT
+            co.order_id,
+            co.pizza_id,
+            CASE
+                WHEN co.pizza_id = 1 THEN 12 -- Meat Lovers
+                WHEN co.pizza_id = 2 THEN 10 -- Vegetarian
+            END AS base_price
+    FROM customer_orders AS co
+),
+    final_prices AS (
+    SELECT
+        bp.order_id,
+        bp.base_price + ISNULL(ec.num_extras, 0) AS total_price
+    FROM base_prices bp
+    LEFT JOIN extras_count ec ON bp.order_id = ec.order_id
+)
 
+SELECT
+    SUM(fp.total_price) AS total_revenue_with_extras
+FROM final_prices fp
+JOIN runner_orders ro ON fp.order_id = ro.order_id
+WHERE ro.cancellation IS NULL;
+;
 
 
 --3. The Pizza Runner team now wants to add an additional ratings system that allows customers to rate their runner, how would you design an additional table for this new dataset - generate a schema for this new table and insert your own data for ratings for each successful customer order between 1 to 5.
@@ -434,9 +405,9 @@ WITH price_per_order AS (
     SELECT 
         co.order_id,
         SUM(CASE 
-            WHEN co.pizza_id = 1 THEN 12
-            ELSE 10
-        END) AS total_revenue,
+                WHEN co.pizza_id = 1 THEN 12
+                ELSE 10
+            END) AS total_revenue,
         CAST(ro.distance_km AS FLOAT) * 0.30 AS total_runner_payment
     FROM customer_orders AS co
     JOIN runner_orders AS ro ON co.order_id = ro.order_id
