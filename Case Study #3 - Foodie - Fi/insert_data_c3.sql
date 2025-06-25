@@ -1,11 +1,11 @@
---INSERT INTO plans
-  --(plan_id, plan_name, price)
---VALUES
-  --('0', 'trial', '0'),
-  --('1', 'basic monthly', '9.90'),
-  --('2', 'pro monthly', '19.90'),
-  --('3', 'pro annual', '199'),
-  --('4', 'churn', null);'
+INSERT INTO plans
+  (plan_id, plan_name, price)
+VALUES
+  ('0', 'trial', '0'),
+  ('1', 'basic monthly', '9.90'),
+  ('2', 'pro monthly', '19.90'),
+  ('3', 'pro annual', '199'),
+  ('4', 'churn', null);'
 
 INSERT INTO subscriptions
   (customer_id, plan_id, start_date)

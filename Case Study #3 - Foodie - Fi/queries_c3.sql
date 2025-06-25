@@ -2,24 +2,58 @@
 
 --1. How many customers has Foodie-Fi ever had?
 
-
-
-
-
-
-
-
+SELECT COUNT(DISTINCT(customer_id)) AS customers
+FROM subscriptions
+;
 
 
 --2. What is the monthly distribution of trial plan start_date values for our dataset - use the start of the month as the group by value
 
-
-
-
+SELECT 
+    DATEFROMPARTS(YEAR(s.start_date), MONTH(s.start_date), 1) AS month_start,
+    COUNT(*) AS number_trials
+FROM subscriptions AS s
+INNER JOIN plans AS p ON s.plan_id = p.plan_id 
+WHERE p.plan_name = 'trial'
+GROUP BY DATEFROMPARTS(YEAR(s.start_date), MONTH(s.start_date), 1)
+ORDER BY month_start
+;
 
 
 --3. What plan start_date values occur after the year 2020 for our dataset? Show the breakdown by count of events for each plan_name
+
+SELECT p.plan_name, COUNT(*) AS plans_after_2020
+FROM subscriptions AS s
+INNER JOIN plans AS p ON s.plan_id = p.plan_id
+WHERE s.start_date >= '2021-01-01'
+GROUP BY  p.plan_name
+ORDER BY plans_after_2020 DESC
+;
+
+
 --4. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?
+
+WITH customers_churned AS(
+        SELECT COUNT(DISTINCT s.customer_id) AS churns
+        FROM subscriptions AS s
+        INNER JOIN plans AS p ON s.plan_id = p.plan_id
+        WHERE p.plan_name = 'churn'
+),
+
+    total_customers_not_churned AS(
+        SELECT COUNT(DISTINCT s.customer_id) AS not_churns
+        FROM subscriptions AS s
+        INNER JOIN plans AS p ON s.plan_id = p.plan_id
+        WHERE p.plan_name = '1'
+)
+
+SELECT *
+FROM total_customers_not_churned
+
+;
+
+
+
 --5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?
 --6. What is the number and percentage of customer plans after their initial free trial?
 --7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
