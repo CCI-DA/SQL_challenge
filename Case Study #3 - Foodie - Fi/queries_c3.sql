@@ -38,8 +38,8 @@ WITH customers_churned AS(
         FROM subscriptions AS s
         INNER JOIN plans AS p ON s.plan_id = p.plan_id
         WHERE p.plan_name = 'churn'
-        
 )
+
 SELECT 
     COUNT(customer_id) AS total_churned,
     CAST(ROUND(COUNT(customer_id) * 100.0 / 
@@ -78,7 +78,50 @@ WHERE first_plan = 'trial' AND second_plan = 'churn';
 
 
 --6. What is the number and percentage of customer plans after their initial free trial?
+
+WITH ranked_plans AS (
+    SELECT 
+        s.customer_id,
+        p.plan_name,
+        s.start_date,
+        ROW_NUMBER() OVER (PARTITION BY s.customer_id ORDER BY s.start_date) AS rn
+    FROM subscriptions AS s
+    INNER JOIN plans AS p ON s.plan_id = p.plan_id
+),
+
+first_and_second_plan AS (
+    SELECT 
+        customer_id,
+        MAX(CASE WHEN rn = 1 THEN plan_name END) AS first_plan,
+        MAX(CASE WHEN rn = 2 THEN plan_name END) AS second_plan
+    FROM ranked_plans
+    GROUP BY customer_id
+),
+customers_with_trial AS (
+    SELECT *
+    FROM first_and_second_plan
+    WHERE first_plan = 'trial' AND second_plan IS NOT NULL
+)
+
+SELECT second_plan, 
+    COUNT(*) AS scnd,
+    CAST(ROUND(COUNT(*)*100 / 
+                (SELECT COUNT(*) FROM customers_with_trial) ,1) AS DECIMAL(4,0)) AS percentage_
+    FROM first_and_second_plan
+    GROUP BY second_plan
+    ORDER BY scnd DESC
+;
+
+
 --7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
+
+
+
+
+
+
+
+
 --8. How many customers have upgraded to an annual plan in 2020?
 --9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
 --10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
