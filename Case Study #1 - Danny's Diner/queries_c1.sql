@@ -7,14 +7,12 @@ GROUP BY customer_id
 ;
 
 
-
 -- 2. How many days has each customer visited the restaurant?
 
 SELECT customer_id , COUNT(DISTINCT(order_date)) AS count_days
 FROM sales
 GROUP BY customer_id
 ;
-
 
 
 -- 3. What was the first item from the menu purchased by each customer?
@@ -32,7 +30,6 @@ WHERE rn = 1
 ;
 
 
-
 -- 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
 
 SELECT TOP 1
@@ -42,7 +39,6 @@ INNER JOIN menu ON sales.product_id = menu.product_id
 GROUP BY menu.product_name
 ORDER BY times_purchased DESC
 ; 
-
 
 
 -- 5. Which item was the most popular for each customer?
@@ -57,7 +53,6 @@ SELECT customer_id , product_id , times_bought
 FROM most_popular_item
 WHERE rnk = 1 
 ;
-
 
 
 -- 6. Which item was purchased first by the customer after they became a member?
@@ -83,7 +78,6 @@ FROM purchases_after_join
 WHERE rn = 1;
 
 
-
 -- 7. Which item was purchased just before the customer became a member?
 
 WITH last_purchase_before_membership AS (
@@ -107,7 +101,6 @@ FROM last_purchase_before_membership
 WHERE rn = 1;
 
 
-
 -- 8. What is the total items and amount spent for each member before they became a member?
 
 SELECT s.customer_id, COUNT(s.product_id) AS total_items , SUM(mn.price) AS total_amount
@@ -117,7 +110,6 @@ SELECT s.customer_id, COUNT(s.product_id) AS total_items , SUM(mn.price) AS tota
  WHERE s.order_date < mb.join_date
  GROUP BY s.customer_id
 ;
-
 
 
 -- 9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
@@ -133,7 +125,6 @@ FROM sales AS s
 INNER JOIN menu AS mn ON s.product_id = mn.product_id
 GROUP BY customer_id
 ;
-
 
 
 -- 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
@@ -175,7 +166,6 @@ INNER JOIN menu AS mn ON s.product_id = mn.product_id
 LEFT JOIN members AS mb ON mb.customer_id = s.customer_id
 ORDER BY s.order_date
 ;
-
 
 
 -- Danny also requires further information about the ranking of customer products.

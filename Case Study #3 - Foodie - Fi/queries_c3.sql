@@ -115,39 +115,84 @@ SELECT second_plan,
 
 --7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
 
+WITH ranked_subscriptions AS (
+    SELECT 
+        s.customer_id,
+        p.plan_name,
+        s.start_date,
+        ROW_NUMBER() OVER (PARTITION BY s.customer_id ORDER BY s.start_date DESC) AS rn
+    FROM subscriptions AS s
+    INNER JOIN plans AS p ON s.plan_id = p.plan_id
+    WHERE s.start_date <= '2020-12-31'
+)
 
-
-
-
-
+SELECT 
+    plan_name,
+    COUNT(*) AS customer_count,
+    CAST(ROUND(COUNT(*) * 100.0 / 
+          (SELECT COUNT(DISTINCT customer_id) 
+           FROM subscriptions 
+           WHERE start_date <= '2020-12-31'), 1) AS DECIMAL(3,1)) AS percentage
+FROM ranked_subscriptions
+WHERE rn = 1
+GROUP BY plan_name
+ORDER BY customer_count DESC;
+;
 
 
 --8. How many customers have upgraded to an annual plan in 2020?
+
+WITH ordered_plans AS (
+  SELECT
+    s.customer_id,
+    p.plan_name,
+    s.start_date,
+    ROW_NUMBER() OVER (PARTITION BY s.customer_id ORDER BY s.start_date) AS rn
+  FROM subscriptions AS s
+  JOIN plans p ON p.plan_id = s.plan_id
+),
+
+first_annual AS (
+  SELECT
+    customer_id,
+    plan_name,
+    start_date
+  FROM ordered_plans
+  WHERE plan_name = 'pro annual'
+    AND start_date BETWEEN '2020-01-01' AND '2020-12-31'
+)
+
+SELECT COUNT(DISTINCT fa.customer_id) AS upgraded_to_annual_2020
+FROM first_annual AS fa
+WHERE EXISTS (
+    SELECT 1
+    FROM ordered_plans AS op
+    WHERE op.customer_id = fa.customer_id
+      AND op.start_date < fa.start_date
+      AND op.plan_name <> 'pro annual'
+);
+
+
 --9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 --10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
 --11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
