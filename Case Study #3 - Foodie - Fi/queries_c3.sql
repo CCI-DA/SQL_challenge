@@ -196,17 +196,88 @@ first_annual_dates AS (
 SELECT 
     AVG(DATEDIFF(day, fd.first_subscription_date, fad.first_annual_date)) AS avg_days_to_annual
 FROM first_dates fd
-INNER JOIN first_annual_dates fad ON fd.customer_id = fad.customer_id;
-
-
-
-
-
-
+INNER JOIN first_annual_dates fad ON fd.customer_id = fad.customer_id
+;
 
 
 --10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
+
+WITH first_day AS (
+    SELECT 
+        s.customer_id,
+        s.start_date AS first_date,
+        ROW_NUMBER() OVER (PARTITION BY s.customer_id ORDER BY s.start_date) AS r_1
+    FROM subscriptions s
+),
+anual_plan_day AS (
+    SELECT 
+        s.customer_id,
+        s.start_date AS annual_date,
+        ROW_NUMBER() OVER (PARTITION BY s.customer_id ORDER BY s.start_date) AS r_2
+    FROM subscriptions s
+    JOIN plans p ON s.plan_id = p.plan_id
+    WHERE p.plan_name = 'pro annual'
+),
+diffs AS (
+    SELECT 
+        apd.customer_id,
+        DATEDIFF(DAY, fd.first_date, apd.annual_date) AS days_diff
+    FROM anual_plan_day apd
+    JOIN first_day fd ON apd.customer_id = fd.customer_id
+    WHERE fd.r_1 = 1 AND apd.r_2 = 1
+),
+bucketed AS (
+    SELECT 
+        customer_id,
+        days_diff,
+        FLOOR(days_diff / 30) AS bucket
+    FROM diffs
+)
+
+SELECT 
+    CONCAT(bucket * 30 + 1, '-', (bucket + 1) * 30, ' days') AS day_range,
+    COUNT(*) AS customers
+FROM bucketed
+GROUP BY bucket
+ORDER BY bucket
+;
+
+
 --11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
+
+WITH pro_first AS (
+  SELECT
+    s.customer_id,
+    MIN(s.start_date) AS pro_start
+  FROM subscriptions s
+  JOIN plans p ON s.plan_id = p.plan_id
+  WHERE p.plan_name = 'pro monthly'
+    AND s.start_date BETWEEN '2020-01-01' AND '2020-12-31'
+  GROUP BY s.customer_id
+),
+
+basic_first AS (
+  SELECT
+    s.customer_id,
+    MIN(s.start_date) AS basic_start
+  FROM subscriptions s
+  JOIN plans p ON s.plan_id = p.plan_id
+  WHERE p.plan_name = 'basic monthly'
+    AND s.start_date BETWEEN '2020-01-01' AND '2020-12-31'
+  GROUP BY s.customer_id
+)
+
+SELECT COUNT(DISTINCT b.customer_id) AS downgraded_customers
+FROM basic_first b
+JOIN pro_first p ON b.customer_id = p.customer_id
+WHERE b.basic_start > p.pro_start;
+
+
+
+
+
+
+
 
 
 
