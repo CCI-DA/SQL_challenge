@@ -175,14 +175,28 @@ WHERE EXISTS (
 
 --9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
 
+WITH first_dates AS (
+    SELECT 
+        s.customer_id,
+        MIN(s.start_date) AS first_subscription_date
+    FROM subscriptions s
+    GROUP BY s.customer_id
+),
 
+first_annual_dates AS (
+    SELECT 
+        s.customer_id,
+        MIN(s.start_date) AS first_annual_date
+    FROM subscriptions s
+    INNER JOIN plans p ON s.plan_id = p.plan_id
+    WHERE p.plan_name = 'pro annual'
+    GROUP BY s.customer_id
+)
 
-
-
-
-
-
-
+SELECT 
+    AVG(DATEDIFF(day, fd.first_subscription_date, fad.first_annual_date)) AS avg_days_to_annual
+FROM first_dates fd
+INNER JOIN first_annual_dates fad ON fd.customer_id = fad.customer_id;
 
 
 
