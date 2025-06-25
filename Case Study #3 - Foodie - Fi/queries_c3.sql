@@ -34,27 +34,49 @@ ORDER BY plans_after_2020 DESC
 --4. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?
 
 WITH customers_churned AS(
-        SELECT COUNT(DISTINCT s.customer_id) AS churns
+        SELECT DISTINCT s.customer_id 
         FROM subscriptions AS s
         INNER JOIN plans AS p ON s.plan_id = p.plan_id
         WHERE p.plan_name = 'churn'
-),
-
-    total_customers_not_churned AS(
-        SELECT COUNT(DISTINCT s.customer_id) AS not_churns
-        FROM subscriptions AS s
-        INNER JOIN plans AS p ON s.plan_id = p.plan_id
-        WHERE p.plan_name = '1'
+        
 )
-
-SELECT *
-FROM total_customers_not_churned
-
+SELECT 
+    COUNT(customer_id) AS total_churned,
+    CAST(ROUND(COUNT(customer_id) * 100.0 / 
+          (SELECT COUNT(DISTINCT customer_id) FROM subscriptions), 1) AS DECIMAL(5,1)) AS churn_percentage
+FROM customers_churned 
 ;
 
 
-
 --5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?
+
+WITH ranked_plans AS (
+    SELECT 
+        s.customer_id,
+        p.plan_name,
+        s.start_date,
+        ROW_NUMBER() OVER (PARTITION BY s.customer_id ORDER BY s.start_date) AS rn
+    FROM subscriptions AS s
+    INNER JOIN plans AS p ON s.plan_id = p.plan_id
+),
+
+first_and_second_plan AS (
+    SELECT 
+        customer_id,
+        MAX(CASE WHEN rn = 1 THEN plan_name END) AS first_plan,
+        MAX(CASE WHEN rn = 2 THEN plan_name END) AS second_plan
+    FROM ranked_plans
+    GROUP BY customer_id
+)
+
+SELECT 
+    COUNT(*) AS churn_after_trial,
+    CAST(ROUND(COUNT(*) * 100.0 / (SELECT COUNT(DISTINCT customer_id) FROM subscriptions), 0) AS DECIMAL(3,0)) AS churn_percentage
+FROM first_and_second_plan
+WHERE first_plan = 'trial' AND second_plan = 'churn';
+;
+
+
 --6. What is the number and percentage of customer plans after their initial free trial?
 --7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
 --8. How many customers have upgraded to an annual plan in 2020?
