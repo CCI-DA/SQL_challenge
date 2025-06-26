@@ -385,25 +385,25 @@ base_toppings AS (
 base_toppings_per_order AS (
     SELECT do.order_id, bt.topping
     FROM delivered_orders AS do
-    JOIN base_toppings AS bt ON d.pizza_id = bt.pizza_id
+    JOIN base_toppings AS bt ON do.pizza_id = bt.pizza_id
 ),
 exclusions_per_order AS (
     SELECT do.order_id, TRY_CAST(exclusion_splt.value AS INT) AS exclusion
     FROM delivered_orders AS do
-    CROSS APPLY STRING_SPLIT(d.exclusions, ',') AS exclusion_splt
-    WHERE d.exclusions IS NOT NULL
+    CROSS APPLY STRING_SPLIT(do.exclusions, ',') AS exclusion_splt
+    WHERE do.exclusions IS NOT NULL
 ),
 extras_per_order AS (
     SELECT do.order_id, TRY_CAST(extra_splt.value AS INT) AS extra
     FROM delivered_orders AS do
-    CROSS APPLY STRING_SPLIT(d.extras, ',') AS extra_splt
-    WHERE d.extras IS NOT NULL
+    CROSS APPLY STRING_SPLIT(do.extras, ',') AS extra_splt
+    WHERE do.extras IS NOT NULL
 ),
 final_base_toppings AS (
     SELECT bto.order_id, bto.topping
     FROM base_toppings_per_order AS bto
     LEFT JOIN exclusions_per_order AS epo ON bto.order_id = epo.order_id AND bto.topping = epo.exclusion
-    WHERE e.exclusion IS NULL
+    WHERE epo.exclusion IS NULL
 ),
 all_toppings AS (
     SELECT topping FROM final_base_toppings
