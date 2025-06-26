@@ -274,14 +274,6 @@ WHERE b.basic_start > p.pro_start;
 
 
 
-
-
-
-
-
-
-
-
 -- B. CHALLENGE PAYMENT QUESTION
 
 --The Foodie-Fi team wants you to create a new payments table for the year 2020 that includes amounts paid by each customer in the subscriptions table with the following requirements:

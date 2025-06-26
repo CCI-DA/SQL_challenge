@@ -18,12 +18,14 @@ GROUP BY customer_id
 -- 3. What was the first item from the menu purchased by each customer?
 
 WITH first_purchases AS (
-    SELECT customer_id, 
-    order_date, 
-    product_id,
-    ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date ASC) AS rn
+    SELECT 
+      customer_id, 
+      order_date, 
+      product_id,
+      ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date ASC) AS rn
     FROM sales
 )
+
 SELECT  customer_id, order_date AS first_order_date, product_id AS first_product_id
 FROM first_purchases
 WHERE rn = 1
@@ -44,8 +46,11 @@ ORDER BY times_purchased DESC
 -- 5. Which item was the most popular for each customer?
 
 WITH most_popular_item AS ( 
-    SELECT customer_id,product_id, COUNT(*) AS times_bought ,
-    RANK() OVER( PARTITION BY customer_id ORDER BY COUNT(*)DESC) AS rnk
+    SELECT 
+      customer_id,
+      product_id,
+      COUNT(*) AS times_bought ,
+      RANK() OVER( PARTITION BY customer_id ORDER BY COUNT(*)DESC) AS rnk
     FROM sales 
     GROUP BY customer_id, product_id )
 
@@ -63,10 +68,7 @@ WITH purchases_after_join AS (
     s.order_date,
     s.product_id,
     mn.product_name,
-    ROW_NUMBER() OVER (
-      PARTITION BY s.customer_id
-      ORDER BY s.order_date
-    ) AS rn
+    ROW_NUMBER() OVER (PARTITION BY s.customer_id ORDER BY s.order_date) AS rn
   FROM sales AS s
   INNER JOIN members AS mb ON s.customer_id = mb.customer_id
   INNER JOIN menu AS mn ON s.product_id = mn.product_id
@@ -86,10 +88,7 @@ WITH last_purchase_before_membership AS (
     s.order_date,
     s.product_id,
     mn.product_name,
-    ROW_NUMBER() OVER (
-      PARTITION BY s.customer_id
-      ORDER BY s.order_date DESC , s.product_id DESC
-    ) AS rn
+    ROW_NUMBER() OVER (PARTITION BY s.customer_id ORDER BY s.order_date DESC , s.product_id DESC) AS rn
   FROM sales AS s
   INNER JOIN members AS mb ON s.customer_id = mb.customer_id
   INNER JOIN menu AS mn ON s.product_id = mn.product_id
@@ -172,11 +171,15 @@ ORDER BY s.order_date
 -- But he purposely does not need the ranking for non-member purchases so he expects null ranking values for the records when customers are not yet part of the loyalty program.
 
 WITH member_column AS(
-  SELECT s.customer_id, s.order_date , mn.product_name , mn.price, 
-  (CASE 
-    WHEN mb.join_date <= s.order_date  THEN 'Y'
-    ELSE 'N'
-  END) AS member
+  SELECT 
+    s.customer_id, 
+    s.order_date , 
+    mn.product_name ,
+    mn.price, 
+    (CASE 
+      WHEN mb.join_date <= s.order_date  THEN 'Y'
+      ELSE 'N'
+    END) AS member
 
 FROM sales AS s
 INNER JOIN menu AS mn ON s.product_id = mn.product_id
@@ -184,11 +187,16 @@ LEFT JOIN members AS mb ON mb.customer_id = s.customer_id
 ),
 
 ranked_column AS(
-  SELECT customer_id, order_date, product_name, price, member,
-  (CASE 
-    WHEN member = 'N' THEN NULL
-    ELSE DENSE_RANK() OVER (PARTITION BY member, customer_id ORDER BY order_date)
-  END) AS ranking
+  SELECT 
+    customer_id,
+    order_date,
+    product_name,
+    price,
+    member,
+   (CASE 
+      WHEN member = 'N' THEN NULL
+      ELSE DENSE_RANK() OVER (PARTITION BY member, customer_id ORDER BY order_date)
+    END) AS ranking
 
   FROM member_column
 )

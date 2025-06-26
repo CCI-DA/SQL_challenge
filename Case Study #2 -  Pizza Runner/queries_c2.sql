@@ -77,12 +77,10 @@ GROUP BY customer_id, changes
 
 -- 8. How many pizzas were delivered that had both exclusions and extras?
 
-SELECT COUNT(*) pizzas_delivered_with_exclusions_extras 
+SELECT COUNT(*) AS pizzas_delivered_with_exclusions_extras 
 FROM customer_orders AS co
 INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
-WHERE ro.cancellation IS NULL 
-AND co.exclusions IS NOT NULL 
-AND co.extras IS NOT NULL 
+WHERE ro.cancellation IS NULL AND co.exclusions IS NOT NULL AND co.extras IS NOT NULL 
 ;
 
 
@@ -107,7 +105,8 @@ GROUP BY DATENAME(WEEKDAY, order_time)
 
 -- 1. How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)
 
-SELECT DATEADD(DAY, 7 * FLOOR(DATEDIFF(DAY, '2021-01-01', registration_date) / 7), '2021-01-01') AS week_start,
+SELECT 
+    DATEADD(DAY, 7 * FLOOR(DATEDIFF(DAY, '2021-01-01', registration_date) / 7), '2021-01-01') AS week_start,
     COUNT(*) AS runners_signed_up
 FROM runners
 WHERE registration_date >= '2021-01-01'
@@ -133,7 +132,6 @@ WITH time_to_prepare AS(
         co.order_id,
         co.pizza_id, 
         DATEDIFF(MINUTE,co.order_time, ro.pickup_time) AS time_to_prepare
-
     FROM customer_orders AS co
     INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
     WHERE ro.cancellation IS NULL
@@ -150,9 +148,7 @@ GROUP BY order_id, time_to_prepare
 -- 4. What was the average distance travelled for each customer?
 
 WITH distinct_orders AS(
-    SELECT DISTINCT co.order_id , 
-                    co.customer_id,
-                    ro.distance_km
+    SELECT DISTINCT co.order_id , co.customer_id, ro.distance_km
     FROM runner_orders AS ro
     INNER JOIN customer_orders AS co ON ro.order_id = co.order_id
     WHERE ro.cancellation IS NULL
@@ -199,7 +195,9 @@ WITH count_orders AS(
     FROM runner_orders
 )
 
-SELECT runner_id,(SUM(clasification_orders)*100/COUNT(order_id)) AS successful_delivery_percentage
+SELECT 
+    runner_id,
+    SUM(clasification_orders)*100/COUNT(order_id) AS successful_delivery_percentage
 FROM count_orders
 GROUP BY runner_id
 ;
@@ -215,7 +213,7 @@ WITH toppings_split AS(
     CROSS APPLY string_split(toppings, ',') AS splt
 )
 
-SELECT pn.pizza_name, topping_name
+SELECT pn.pizza_name, toppings_splt
 FROM toppings_split AS ts
 INNER JOIN pizza_toppings AS pt ON ts.toppings_splt = pt.topping_id
 INNER JOIN pizza_names AS pn ON pn.pizza_id = ts.pizza_id
@@ -242,7 +240,7 @@ ORDER BY times_added DESC
 
 -- 3.What was the most common exclusion?
 
-WITH toppings_split AS(
+WITH exclusions_split AS(
     SELECT CAST(splt.value AS INT) AS exclusions_splt
     FROM customer_orders
     CROSS APPLY string_split(exclusions, ',') AS splt
@@ -251,7 +249,7 @@ WITH toppings_split AS(
 SELECT TOP 1
     pt.topping_name,
     COUNT(exclusions_splt) as times_added
-FROM toppings_split AS ts
+FROM exclusions_split AS ts
 INNER JOIN pizza_toppings AS pt ON ts.exclusions_splt = pt.topping_id
 GROUP BY pt.topping_name
 ORDER BY times_added DESC
@@ -274,15 +272,15 @@ WITH pizza_type AS (
     extras_list AS(
         SELECT co.order_id, pt.topping_name
         FROM customer_orders AS co
-        CROSS APPLY string_split(extras , ',') AS s
-        INNER JOIN pizza_toppings AS pt ON TRY_CAST(s.value AS INT) = pt.topping_id
+        CROSS APPLY string_split(extras , ',') AS extras_splt
+        INNER JOIN pizza_toppings AS pt ON TRY_CAST(extras_splt.value AS INT) = pt.topping_id
         WHERE extras IS NOT NULL
 ),
     exclusion_list AS(
         SELECT  co.order_id, pt.topping_name
         FROM customer_orders AS co
-        CROSS APPLY string_split(exclusions , ',') AS s
-        INNER JOIN pizza_toppings AS pt ON TRY_CAST(s.value AS INT) = pt.topping_id
+        CROSS APPLY string_split(exclusions , ',') AS exclusions_splt
+        INNER JOIN pizza_toppings AS pt ON TRY_CAST(exclusions_splt.value AS INT) = pt.topping_id
         WHERE exclusions IS NOT NULL
 ),
     combined AS(
@@ -291,20 +289,20 @@ WITH pizza_type AS (
             pt.pizza_name,
             STRING_AGG('Exclude ' + el.topping_name, ', ') AS excludes,
             STRING_AGG( 'Extra ' + ex.topping_name, ', ') AS extras
-        FROM pizza_type pt
-        LEFT JOIN exclusion_list el ON pt.order_id = el.order_id
-        LEFT JOIN extras_list ex ON pt.order_id = ex.order_id
+        FROM pizza_type AS pt
+        LEFT JOIN exclusion_list AS el ON pt.order_id = el.order_id
+        LEFT JOIN extras_list AS ex ON pt.order_id = ex.order_id
         GROUP BY pt.order_id, pt.pizza_name
         )
 
 SELECT 
     order_id,
-    CASE
+    (CASE
         WHEN excludes IS NULL AND extras IS NULL THEN pizza_name
         WHEN excludes IS NOT NULL AND extras IS NULL THEN pizza_name + ' - ' + excludes
         WHEN excludes IS NULL AND extras IS NOT NULL THEN pizza_name + ' - ' + extras
         ELSE pizza_name + ' - ' + excludes + ' - ' + extras
-    END AS order_item
+    END) AS order_item
 FROM combined
 ORDER BY order_id
 ;
@@ -314,39 +312,39 @@ ORDER BY order_id
 --     For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
 
 WITH base_toppings AS (
-    SELECT co.order_id, pr.pizza_id, CAST(s.value AS INT) AS topping_id
-    FROM customer_orders co
-    JOIN pizza_recipes pr ON co.pizza_id = pr.pizza_id
-    CROSS APPLY string_split(pr.toppings, ',') s
+    SELECT co.order_id, pr.pizza_id, CAST(base_topp_splt.value AS INT) AS topping_id
+    FROM customer_orders AS co
+    JOIN pizza_recipes AS pr ON co.pizza_id = pr.pizza_id
+    CROSS APPLY string_split(pr.toppings, ',') AS base_topp_splt
 ),
 extra_toppings AS (
-    SELECT co.order_id, CAST(s.value AS INT) AS topping_id
-    FROM customer_orders co
-    CROSS APPLY string_split(co.extras, ',') s
+    SELECT co.order_id, CAST(extra_splt.value AS INT) AS topping_id
+    FROM customer_orders AS co
+    CROSS APPLY string_split(co.extras, ',') AS extra_splt
 ),
 combined_toppings AS (
     SELECT bt.order_id, bt.topping_id, 'base' AS source
-    FROM base_toppings bt
+    FROM base_toppings AS bt
     UNION ALL
     SELECT et.order_id, et.topping_id, 'extra' AS source
-    FROM extra_toppings et
+    FROM extra_toppings AS et
 ),
 tagged_toppings AS (
     SELECT 
         ct.order_id,
         ct.topping_id,
-        t.topping_name,
+        pt.topping_name,
         COUNT(*) OVER(PARTITION BY ct.order_id, ct.topping_id) AS count_per_topping
-    FROM combined_toppings ct
-    JOIN pizza_toppings t ON ct.topping_id = t.topping_id
+    FROM combined_toppings AS ct
+    JOIN pizza_toppings AS pt ON ct.topping_id = pt.topping_id
 ),
 formatted_toppings AS (
     SELECT 
         order_id,
-        CASE 
+        (CASE 
             WHEN count_per_topping = 2 THEN '2x' + topping_name
             ELSE topping_name
-        END AS topping_display
+        END) AS topping_display
     FROM tagged_toppings
     GROUP BY order_id, topping_name, count_per_topping
 ),
@@ -375,48 +373,36 @@ WITH delivered_orders AS (
         co.pizza_id, 
         co.extras, 
         co.exclusions
-    FROM customer_orders co
-    JOIN runner_orders ro ON co.order_id = ro.order_id
+    FROM customer_orders AS co
+    JOIN runner_orders AS ro ON co.order_id = ro.order_id
     WHERE ro.cancellation IS NULL
 ),
 base_toppings AS (
-    SELECT 
-        pr.pizza_id, 
-        TRY_CAST(s.value AS INT) AS topping
-    FROM pizza_recipes pr
-    CROSS APPLY STRING_SPLIT(pr.toppings, ',') AS s
+    SELECT pr.pizza_id, TRY_CAST(base_topp_splt.value AS INT) AS topping
+    FROM pizza_recipes AS pr
+    CROSS APPLY STRING_SPLIT(pr.toppings, ',') AS base_topp_splt
 ),
 base_toppings_per_order AS (
-    SELECT 
-        d.order_id, 
-        bt.topping
-    FROM delivered_orders d
-    JOIN base_toppings bt ON d.pizza_id = bt.pizza_id
+    SELECT do.order_id, bt.topping
+    FROM delivered_orders AS do
+    JOIN base_toppings AS bt ON d.pizza_id = bt.pizza_id
 ),
 exclusions_per_order AS (
-    SELECT 
-        d.order_id, 
-        TRY_CAST(s.value AS INT) AS exclusion
-    FROM delivered_orders d
-    CROSS APPLY STRING_SPLIT(d.exclusions, ',') AS s
+    SELECT do.order_id, TRY_CAST(exclusion_splt.value AS INT) AS exclusion
+    FROM delivered_orders AS do
+    CROSS APPLY STRING_SPLIT(d.exclusions, ',') AS exclusion_splt
     WHERE d.exclusions IS NOT NULL
 ),
 extras_per_order AS (
-    SELECT 
-        d.order_id, 
-        TRY_CAST(s.value AS INT) AS extra
-    FROM delivered_orders d
-    CROSS APPLY STRING_SPLIT(d.extras, ',') AS s
+    SELECT do.order_id, TRY_CAST(extra_splt.value AS INT) AS extra
+    FROM delivered_orders AS do
+    CROSS APPLY STRING_SPLIT(d.extras, ',') AS extra_splt
     WHERE d.extras IS NOT NULL
 ),
 final_base_toppings AS (
-    SELECT 
-        bto.order_id, 
-        bto.topping
-    FROM base_toppings_per_order bto
-    LEFT JOIN exclusions_per_order e
-        ON bto.order_id = e.order_id 
-       AND bto.topping = e.exclusion
+    SELECT bto.order_id, bto.topping
+    FROM base_toppings_per_order AS bto
+    LEFT JOIN exclusions_per_order AS epo ON bto.order_id = epo.order_id AND bto.topping = epo.exclusion
     WHERE e.exclusion IS NULL
 ),
 all_toppings AS (
@@ -424,9 +410,8 @@ all_toppings AS (
     UNION ALL
     SELECT extra FROM extras_per_order
 )
-SELECT 
-    topping, 
-    COUNT(*) AS total_uses
+
+SELECT topping, COUNT(*) AS total_uses
 FROM all_toppings
 GROUP BY topping
 ORDER BY total_uses DESC
@@ -437,11 +422,12 @@ ORDER BY total_uses DESC
 -- D. Pricing and Ratings
 -- 1. If a Meat Lovers pizza costs $12 and Vegetarian costs $10 and there were no charges for changes - how much money has Pizza Runner made so far if there are no delivery fees?
 
-SELECT pn.pizza_name,
+SELECT 
+    pn.pizza_name,
     SUM((CASE
-        WHEN co.pizza_id = 1 THEN 12
-        ELSE 10
-    END)) AS total_price_per_pizza 
+            WHEN co.pizza_id = 1 THEN 12
+            ELSE 10
+        END)) AS total_price_per_pizza 
 FROM customer_orders AS co
 INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
 INNER JOIN pizza_names AS pn ON co.pizza_id = pn.pizza_id
@@ -453,10 +439,7 @@ GROUP BY pn.pizza_name
 -- 2. What if there was an additional $1 charge for any pizza extras?
 
 WITH extras_count AS(
-        SELECT 
-            co.order_id,
-            co.pizza_id,
-            COUNT(*) AS num_extras
+        SELECT co.order_id, co.pizza_id, COUNT(*) AS num_extras
         FROM customer_orders AS co
         CROSS APPLY string_split(extras, ',') AS s
         WHERE extras IS NOT NULL
@@ -466,24 +449,21 @@ WITH extras_count AS(
         SELECT
             co.order_id,
             co.pizza_id,
-            CASE
+            (CASE
                 WHEN co.pizza_id = 1 THEN 12 -- Meat Lovers
                 WHEN co.pizza_id = 2 THEN 10 -- Vegetarian
-            END AS base_price
+            END) AS base_price
     FROM customer_orders AS co
 ),
     final_prices AS (
-    SELECT
-        bp.order_id,
-        bp.base_price + ISNULL(ec.num_extras, 0) AS total_price
-    FROM base_prices bp
-    LEFT JOIN extras_count ec ON bp.order_id = ec.order_id
+    SELECT bp.order_id, bp.base_price + ISNULL(ec.num_extras, 0) AS total_price
+    FROM base_prices AS bp
+    LEFT JOIN extras_count AS ec ON bp.order_id = ec.order_id
 )
 
-SELECT
-    SUM(fp.total_price) AS total_revenue_with_extras
-FROM final_prices fp
-JOIN runner_orders ro ON fp.order_id = ro.order_id
+SELECT SUM(fp.total_price) AS total_revenue_with_extras
+FROM final_prices AS fp
+JOIN runner_orders AS ro ON fp.order_id = ro.order_id
 WHERE ro.cancellation IS NULL;
 ;
 
@@ -524,24 +504,26 @@ WHERE ro.cancellation IS NULL;
 --  Total number of pizzas
 
 WITH pizza_counts AS (
-    SELECT   order_id, customer_id, COUNT(*) AS total_pizzas
+    SELECT order_id, customer_id, COUNT(*) AS total_pizzas
     FROM customer_orders
-    GROUP BY order_id, customer_id )
+    GROUP BY order_id, customer_id 
+)
 
-SELECT  DISTINCT co.order_id,
+SELECT DISTINCT 
     co.customer_id,
+    co.order_id,
     ro.runner_id,
     rr.rating,
     co.order_time,
     ro.pickup_time,
     DATEDIFF(MINUTE, co.order_time, ro.pickup_time) AS time_btw_order_and_pickup,
-    ro.duration_min,
-    TRY_CAST(ro.distance_km AS FLOAT) / TRY_CAST(ro.duration_min AS FLOAT) * 60 AS avg_speed_km_hour,
-    pc.total_pizzas
-FROM runner_orders ro
-INNER JOIN customer_orders co ON ro.order_id = co.order_id
-INNER JOIN pizza_counts pc ON co.order_id = pc.order_id
-INNER JOIN rating_runner rr ON ro.order_id = rr.order_id 
+    ro.duration_min AS delivery_duration,
+    TRY_CAST(ro.distance_km AS FLOAT) / TRY_CAST(ro.duration_min AS FLOAT) * 60 AS avg_speed,
+    pc.total_pizzas AS total_number_of_pizzas
+FROM runner_orders AS ro
+INNER JOIN customer_orders AS co ON ro.order_id = co.order_id
+INNER JOIN pizza_counts AS pc ON co.order_id = pc.order_id
+INNER JOIN rating_runner AS rr ON ro.order_id = rr.order_id 
 WHERE ro.cancellation IS NULL;
 ;
 
@@ -585,22 +567,3 @@ FROM price_per_order;
 ;
 
 -- It has a direct impact on the database design.
-
-WITH split_toppings AS(
-    SELECT co.order_id, co.pizza_id , CAST(stp.value AS INT) AS toppings_split
-    FROM customer_orders AS co
-    INNER JOIN runner_orders AS ro ON co.order_id = ro.order_id
-    CROSS APPLY string_split(co.extras, ',') AS stp
-    WHERE ro.cancellation IS NULL 
-)
-
-SELECT DISTINCT order_id,
-    SUM((CASE
-            WHEN pizza_id = 1 AND toppings_split IS NOT NULL THEN 12+1
-            WHEN pizza_id = 2 AND toppings_split IS NOT NULL THEN 10+1
-            WHEN pizza_id = 1 AND toppings_split IS  NULL THEN 12
-            ELSE 10
-        END)) AS total_price_with_extras
-FROM split_toppings
-GROUP BY order_id
-;
