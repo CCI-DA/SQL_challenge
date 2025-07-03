@@ -245,33 +245,28 @@ ORDER BY bucket
 
 --11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
 
-WITH pro_first AS (
-  SELECT
-    s.customer_id,
-    MIN(s.start_date) AS pro_start
-  FROM subscriptions s
-  JOIN plans p ON s.plan_id = p.plan_id
-  WHERE p.plan_name = 'pro monthly'
-    AND s.start_date BETWEEN '2020-01-01' AND '2020-12-31'
-  GROUP BY s.customer_id
+WITH pro_monthly AS(
+    SELECT 
+    s.customer_id ,
+    s.start_date AS pro_start
+    FROM plans AS p
+    INNER JOIN subscriptions AS s ON p.plan_id = s.plan_id
+    WHERE p.plan_name = 'pro monthly' AND s.start_date BETWEEN '2021-01-01' AND '2021-12-31'
 ),
-
-basic_first AS (
-  SELECT
-    s.customer_id,
-    MIN(s.start_date) AS basic_start
-  FROM subscriptions s
-  JOIN plans p ON s.plan_id = p.plan_id
-  WHERE p.plan_name = 'basic monthly'
-    AND s.start_date BETWEEN '2020-01-01' AND '2020-12-31'
-  GROUP BY s.customer_id
+    basic_monthly AS(
+    SELECT 
+    s.customer_id , 
+    s.start_date AS basic_start
+    FROM plans AS p
+    INNER JOIN subscriptions AS s ON p.plan_id = s.plan_id
+    WHERE p.plan_name = 'basic monthly' AND s.start_date BETWEEN '2021-01-01' AND '2021-12-31'
 )
 
-SELECT COUNT(DISTINCT b.customer_id) AS downgraded_customers
-FROM basic_first b
-JOIN pro_first p ON b.customer_id = p.customer_id
-WHERE b.basic_start > p.pro_start;
-
+SELECT COUNT(DISTINCT pro.customer_id) AS downgraded_customers
+FROM pro_monthly AS pro
+INNER JOIN basic_monthly AS basic ON pro.customer_id = basic.customer_id
+  AND basic.basic_start > pro.pro_start
+;
 
 
 -- B. CHALLENGE PAYMENT QUESTION
