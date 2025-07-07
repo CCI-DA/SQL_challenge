@@ -10,6 +10,8 @@
 
 > This case study focuses on leveraging data to support strategic planning and future expansion.
 
+>This case study also aims to mimic traditional banking style transactions data but with a twist.
+
 ### What to spect
 
 > 1. Data cleaning.
