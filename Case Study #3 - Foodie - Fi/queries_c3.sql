@@ -278,7 +278,16 @@ INNER JOIN basic_monthly AS basic ON pro.customer_id = basic.customer_id
 --  upgrades from pro monthly to pro annual are paid at the end of the current billing period and also starts at the end of the month period
 --  once a customer churns they will no longer make payments
 
--- Example outputs for this table might look like the following:
+--CREATE TABLE payments (
+  --  payment_id INTEGER PRIMARY KEY,
+  --  customer_id INT NOT NULL,
+  --  payment_date DATE NOT NULL,
+ --   amount DECIMAL(10,2) NOT NULL,
+ --   plan_id INT NOT NULL,
+ --   plan_name VARCHAR(13)
+--);
+
+
 
 
 
@@ -287,7 +296,36 @@ INNER JOIN basic_monthly AS basic ON pro.customer_id = basic.customer_id
 --The following are open ended questions which might be asked during a technical interview for this case study - there are no right or wrong answers, but answers that make sense from both a technical and a business perspective make an amazing impression!
 
 --1. How would you calculate the rate of growth for Foodie-Fi?
---2. What key metrics would you recommend Foodie-Fi management to track over time to assess performance of their overall business?
+-- [(Current profit - previous profit YTD) / previous profit YTD ] *100
+
+--2. What key metrics would you recommend Foodie-Fi management
+-- Revenue per user
+-- Customer Lifetime Value
+-- Churn rate
+-- Customer retention rate
+-- Upgrade/dowgrade rates
+-- Engagement metrics
+
+
 --3. What are some key customer journeys or experiences that you would analyse further to improve customer retention?
+-- Customers acquired with the highest retention.
+-- Customers on the highest-tier plan.
+-- Customers who downgrade their plan.
+-- Customers who choose to churn after a certain period of time.
+
+
 --4. If the Foodie-Fi team were to create an exit survey shown to customers who wish to cancel their subscription, what questions would you include in the survey?
+-- They cancel due to the high cost.
+-- They find the content they want is not available.
+-- They see a better offer on other platforms.
+-- They only signed up to take advantage of the free 7-day trial.
+
+
 --5. What business levers could the Foodie-Fi team use to reduce the customer churn rate? How would you validate the effectiveness of your ideas?
+
+-- Allow account sharing:
+--     Basic monthly plan includes 2 screen.
+--     Pro monthly plan includes 3 screens.
+--     Pro annual includes 4 screens.
+-- Enable offline video downloads with the Pro Monthly and pro annual plan.
+-- Include ads only in the Basic Monthly plan.
