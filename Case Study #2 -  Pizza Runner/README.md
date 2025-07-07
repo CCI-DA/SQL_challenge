@@ -5,7 +5,7 @@
 
 ### Problem Statement
 > Danny started a pizza delivery service and hired runners to deliver pizzas ordered through his app. As a data-driven entrepreneur, he collected detailed data on customers, orders, runners, pizzas, and delivery metrics.
-> Your task is to clean the data (handling nulls, formatting issues, and inconsistencies) and perform analysis to answer key business questions, including:
+> The task is to clean the data (handling nulls, formatting issues, and inconsistencies) and perform analysis to answer key business questions, including:
 * Total pizzas ordered and unique orders
 * Runner performance and delivery stats
 * Order modifications (extras/exclusions)
