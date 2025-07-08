@@ -51,10 +51,57 @@ WHERE cn.end_date < '9999-12-31'
 -- B. Customer Transactions
 
 -- 1.What is the unique count and total amount for each transaction type?
+
+SELECT 
+    txn_type, 
+    COUNT(DISTINCT(txn_date)) AS total_transactions , 
+    SUM(txn_amount) AS total_amount
+FROM customer_transactions
+GROUP BY txn_type
+;
+
+
 -- 2.What is the average total historical deposit counts and amounts for all customers?
+
+WITH calculation_total_historical AS(
+    SELECT customer_id , SUM(txn_amount) AS total_amount , COUNT(*) AS total_deposits
+    FROM customer_transactions
+    WHERE txn_type = 'deposit'
+    GROUP BY customer_id
+)
+
+SELECT  AVG(total_deposits) avg_total_deposits , AVG(total_amount) AS avg_total_amount
+FROM calculation_total_historical
+;
+
+
 -- 3.For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?
+
+
+SELECT txn_type , DATENAME(MONTH,txn_date) AS month, txn_amount
+FROM customer_transactions
+;
+
+
+
+
+
+
+
 -- 4.What is the closing balance for each customer at the end of the month?
 -- 5.What is the percentage of customers who increase their closing balance by more than 5%?
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 --C. Data Allocation Challenge
