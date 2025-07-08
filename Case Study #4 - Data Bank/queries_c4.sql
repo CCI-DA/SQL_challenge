@@ -26,20 +26,26 @@ ORDER BY customers DESC
 
 -- 4.How many days on average are customers reallocated to a different node?
 
+SELECT AVG(DATEDIFF(DAY,start_date,end_date)) AS average
+FROM customer_nodes
+WHERE end_date < '9999-12-31' AND customer_id = 1
+;
+
 
 -- 5.What is the median, 80th and 95th percentile for this same reallocation days metric for each region?
 
-
-
-
-
-
-
-
-
-
-
-
+SELECT DISTINCT
+        r.region_name,
+        PERCENTILE_CONT(0.5) 
+            WITHIN GROUP (ORDER BY DATEDIFF(DAY,cn.start_date,cn.end_date)) OVER(PARTITION BY r.region_name) AS median,
+        PERCENTILE_CONT(0.80) 
+            WITHIN GROUP (ORDER BY DATEDIFF(DAY,cn.start_date,cn.end_date)) OVER(PARTITION BY r.region_name) AS eightieth_percentile,
+        PERCENTILE_CONT(0.95) 
+            WITHIN GROUP (ORDER BY DATEDIFF(DAY,cn.start_date,cn.end_date)) OVER(PARTITION BY r.region_name) AS ninety_fifth_percentile
+FROM customer_nodes AS cn
+INNER JOIN regions AS r ON cn.region_id = r.region_id 
+WHERE cn.end_date < '9999-12-31'
+;
 
 
 -- B. Customer Transactions
