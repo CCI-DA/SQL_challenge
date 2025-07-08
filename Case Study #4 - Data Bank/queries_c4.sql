@@ -77,18 +77,59 @@ FROM calculation_total_historical
 
 -- 3.For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?
 
+WITH more_than_one_deposit AS(
+    SELECT 
+        customer_id, 
+        FORMAT(txn_date, 'yyyy-MM') AS month_ ,
+        COUNT(txn_type) AS count_customers
+    FROM customer_transactions
+    WHERE txn_type = 'deposit'
+    GROUP BY FORMAT(txn_date, 'yyyy-MM'), customer_id
+    HAVING COUNT(txn_type) > 1
+),
 
-SELECT txn_type , DATENAME(MONTH,txn_date) AS month, txn_amount
+purchase_or_withdrawal AS(
+    SELECT customer_id, 
+    FORMAT(txn_date, 'yyyy-MM') AS month_ , 
+    COUNT(txn_type) AS count_customers
+    FROM customer_transactions
+    WHERE txn_type IN  ('purchase','withdrawal')
+    GROUP BY FORMAT(txn_date, 'yyyy-MM'), customer_id
+)
+
+SELECT prw.month_ , COUNT(DISTINCT(prw.count_customers)) AS total_customers
+FROM purchase_or_withdrawal AS prw
+INNER JOIN more_than_one_deposit AS mtod ON prw.customer_id = mtod.customer_id AND prw.month_ = mtod.month_
+GROUP BY prw.month_
+ORDER BY prw.month_
+;
+
+
+-- 4.What is the closing balance for each customer at the end of the month?
+
+WITH closing_balance AS(
+SELECT
+  customer_id,
+  FORMAT(txn_date, 'yyyy-MM') AS month,
+  SUM(txn_amount) OVER (PARTITION BY customer_id  ORDER BY FORMAT(txn_date, 'yyyy-MM')
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+  ) AS closing_balance
 FROM customer_transactions
+GROUP BY customer_id, FORMAT(txn_date, 'yyyy-MM'), txn_amount
+)
+
+SELECT customer_id , month, SUM( closing_balance)
+FROM closing_balance
+GROUP BY month,customer_id
+;
+
+SELECT *
+FROM customer_transactions
+WHERE customer_id = 2
 ;
 
 
 
-
-
-
-
--- 4.What is the closing balance for each customer at the end of the month?
 -- 5.What is the percentage of customers who increase their closing balance by more than 5%?
 
 
