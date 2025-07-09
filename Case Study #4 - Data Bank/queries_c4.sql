@@ -183,6 +183,8 @@ FROM first_last_balance flb
 LEFT JOIN increased_customers ic ON flb.customer_id = ic.customer_id
 ;
 
+
+
 --C. Data Allocation Challenge
 
 --To test out a few different hypotheses - the Data Bank team wants to run an experiment where different groups of customers would be allocated data using 3 different options:
@@ -194,21 +196,55 @@ LEFT JOIN increased_customers ic ON flb.customer_id = ic.customer_id
 --For this multi-part challenge question - you have been requested to generate the following data elements to help the Data Bank team estimate how much data will need to be provisioned for each option:
 
 --    running customer balance column that includes the impact each transaction
+
+SELECT customer_id , SUM(txn_amount) OVER (PARTITION BY customer_id ORDER BY txn_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_balance
+FROM customer_transactions
+GROUP BY customer_id, txn_date, txn_amount
+;
+
 --    customer balance at the end of each month
+WITH runnin_balance AS(
+  SELECT customer_id , FORMAT(txn_date , 'yyyy-MM') AS month_ ,  SUM(txn_amount) OVER(PARTITION BY customer_id ORDER BY txn_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW ) AS running_balance
+  FROM customer_transactions
+  GROUP BY customer_id , txn_amount , txn_date
+)
+
+SELECT MAX(month_) AS month , running_balance , customer_id
+FROM runnin_balance
+GROUP BY customer_id , running_balance
+;
+
+
 --    minimum, average and maximum values of the running balance for each customer
 
 -- Using all of the data available - how much data would have been required for each option on a monthly basis?
+
+
+
+
+
+
+
+
 
 
 --D. Extra Challenge
 
 -- Data Bank wants to try another option which is a bit more difficult to implement - they want to calculate data growth using an interest calculation, just like in a traditional savings account you might have with a bank.
 
--- If the annual interest rate is set at 6% and the Data Bank team wants to reward its customers by increasing their data allocation based off the interest calculated on a daily basis at the end of each day, how much data would be required for this option on a monthly basis?
+-- If the annual interest rate is set at 6% and the Data Bank team wants to reward its customers by increasing their data allocation based off the interest calculated on a daily basis at the end of each day.
+-- How much data would be required for this option on a monthly basis?
 
 -- Special notes:
 
 --  Data Bank wants an initial calculation which does not allow for compounding interest, however they may also be interested in a daily compounding interest calculation so you can try to perform this calculation if you have the stamina!
+
+
+
+
+
+
+
 
 
 -- Extension Request
