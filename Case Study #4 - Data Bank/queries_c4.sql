@@ -107,43 +107,81 @@ ORDER BY prw.month_
 
 -- 4.What is the closing balance for each customer at the end of the month?
 
-WITH closing_balance AS(
-SELECT
-  customer_id,
-  FORMAT(txn_date, 'yyyy-MM') AS month,
-  SUM(txn_amount) OVER (PARTITION BY customer_id  ORDER BY FORMAT(txn_date, 'yyyy-MM')
-    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-  ) AS closing_balance
-FROM customer_transactions
-GROUP BY customer_id, FORMAT(txn_date, 'yyyy-MM'), txn_amount
+WITH running_balance AS (
+  SELECT
+    customer_id,
+    txn_date,
+    FORMAT(txn_date, 'yyyy-MM') AS month,
+    SUM(txn_amount) OVER ( PARTITION BY customer_id ORDER BY txn_date
+      ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) AS balance
+  FROM customer_transactions
+),
+month_end AS (
+  SELECT customer_id, month, MAX(txn_date) AS last_txn_date
+  FROM running_balance
+  GROUP BY customer_id, month
 )
 
-SELECT customer_id , month, SUM( closing_balance)
-FROM closing_balance
-GROUP BY month,customer_id
+SELECT rb.customer_id, rb.month, rb.balance AS closing_balance
+FROM running_balance AS rb
+INNER JOIN month_end AS me ON rb.customer_id = me.customer_id AND rb.month = me.month AND rb.txn_date = me.last_txn_date
+ORDER BY rb.customer_id, rb.month
 ;
-
-SELECT *
-FROM customer_transactions
-WHERE customer_id = 2
-;
-
 
 
 -- 5.What is the percentage of customers who increase their closing balance by more than 5%?
 
-
-
-
-
-
-
-
-
-
-
-
-
+WITH closing_balances AS (
+  SELECT
+    customer_id,
+    month,
+    balance AS closing_balance,
+    ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY month) AS rn
+  FROM (
+    SELECT rb.customer_id, rb.month, rb.balance
+    FROM (
+      SELECT
+        customer_id,
+        txn_date,
+        FORMAT(txn_date, 'yyyy-MM') AS month,
+        SUM(txn_amount) OVER (PARTITION BY customer_id ORDER BY txn_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+        ) AS balance
+      FROM customer_transactions
+    ) AS rb
+    INNER JOIN (
+      SELECT customer_id, FORMAT(txn_date, 'yyyy-MM') AS month, MAX(txn_date) AS last_txn_date
+      FROM customer_transactions
+      GROUP BY customer_id, FORMAT(txn_date, 'yyyy-MM')
+    ) AS me
+      ON rb.customer_id = me.customer_id
+      AND rb.month = me.month
+      AND rb.txn_date = me.last_txn_date
+  )AS x
+),
+max_rn_per_customer AS (
+  SELECT customer_id, MAX(rn) AS max_rn
+  FROM closing_balances
+  GROUP BY customer_id
+),
+first_last_balance AS (
+  SELECT
+    cb1.customer_id,
+    MIN(CASE WHEN cb1.rn = 1 THEN cb1.closing_balance END) AS first_balance,
+    MIN(CASE WHEN cb1.rn = mrc.max_rn THEN cb1.closing_balance END) AS last_balance
+  FROM closing_balances cb1
+  INNER JOIN max_rn_per_customer mrc ON cb1.customer_id = mrc.customer_id
+  GROUP BY cb1.customer_id
+),
+increased_customers AS (
+  SELECT customer_id
+  FROM first_last_balance
+  WHERE last_balance > first_balance * 1.05
+)
+SELECT CAST(COUNT(ic.customer_id) AS FLOAT) / COUNT(flb.customer_id) * 100 AS percentage_increased
+FROM first_last_balance flb
+LEFT JOIN increased_customers ic ON flb.customer_id = ic.customer_id
+;
 
 --C. Data Allocation Challenge
 
