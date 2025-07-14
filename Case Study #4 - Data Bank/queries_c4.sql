@@ -194,6 +194,8 @@ LEFT JOIN increased_customers ic ON flb.customer_id = ic.customer_id
 --    Option 3: data is updated real-time
 
 --For this multi-part challenge question - you have been requested to generate the following data elements to help the Data Bank team estimate how much data will need to be provisioned for each option:
+-- Using all of the data available - how much data would have been required for each option on a monthly basis?
+
 
 --    running customer balance column that includes the impact each transaction
 
@@ -203,29 +205,32 @@ GROUP BY customer_id, txn_date, txn_amount
 ;
 
 --    customer balance at the end of each month
-WITH runnin_balance AS(
-  SELECT customer_id , FORMAT(txn_date , 'yyyy-MM') AS month_ ,  SUM(txn_amount) OVER(PARTITION BY customer_id ORDER BY txn_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW ) AS running_balance
+
+WITH monthly_balance AS (
+  SELECT
+    customer_id,
+    FORMAT(txn_date, 'yyyy-MM') AS month,
+    SUM(txn_amount) AS monthly_amount
   FROM customer_transactions
-  GROUP BY customer_id , txn_amount , txn_date
+  GROUP BY customer_id, FORMAT(txn_date, 'yyyy-MM')
 )
 
-SELECT MAX(month_) AS month , running_balance , customer_id
-FROM runnin_balance
-GROUP BY customer_id , running_balance
-;
+SELECT
+  customer_id,
+  month,
+  monthly_amount,
+  SUM(monthly_amount) OVER ( PARTITION BY customer_id ORDER BY month ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW ) AS cumulative_balance
+FROM monthly_balance
+ORDER BY customer_id, month;
 
 
 --    minimum, average and maximum values of the running balance for each customer
 
--- Using all of the data available - how much data would have been required for each option on a monthly basis?
-
-
-
-
-
-
-
-
+SELECT customer_id, SUM(txn_amount) AS total_balance , AVG(txn_amount) AS average , MAX(txn_amount) AS maximun , MIN(txn_amount) AS minimun
+FROM customer_transactions
+GROUP BY customer_id
+ORDER BY customer_id
+;
 
 
 --D. Extra Challenge
@@ -235,22 +240,20 @@ GROUP BY customer_id , running_balance
 -- If the annual interest rate is set at 6% and the Data Bank team wants to reward its customers by increasing their data allocation based off the interest calculated on a daily basis at the end of each day.
 -- How much data would be required for this option on a monthly basis?
 
--- Special notes:
+WITH interest_daily AS (
+  SELECT
+    customer_id,
+    FORMAT(txn_date, 'yyyy-MM') AS month,
+    txn_amount * 0.06 / 365 AS daily_interest
+  FROM customer_transactions
+),
+interest_monthly AS (
+  SELECT
+    customer_id,
+    month,
+    SUM(daily_interest) AS total_monthly_interest
+  FROM interest_daily
+  GROUP BY customer_id, month
+)
+SELECT * FROM interest_monthly;
 
---  Data Bank wants an initial calculation which does not allow for compounding interest, however they may also be interested in a daily compounding interest calculation so you can try to perform this calculation if you have the stamina!
-
-
-
-
-
-
-
-
-
--- Extension Request
-
--- The Data Bank team wants you to use the outputs generated from the above sections to create a quick Powerpoint presentation which will be used as marketing materials for both external investors who might want to buy Data Bank shares and new prospective customers who might want to bank with Data Bank.
-
---  Using the outputs generated from the customer node questions, generate a few headline insights which Data Bank might use to market it’s world-leading security features to potential investors and customers.
-
---  With the transaction analysis - prepare a 1 page presentation slide which contains all the relevant information about the various options for the data provisioning so the Data Bank management team can make an informed decision.
