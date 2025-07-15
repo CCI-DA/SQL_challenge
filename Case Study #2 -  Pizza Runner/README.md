@@ -1,7 +1,7 @@
 ## Case Study #2 - Pizza Runner
 
 ### Description
->This is the second of eight challenges I will be solving over the next eight weeks.
+>This is the SECOND of eight challenges I will be solving over the next eight weeks.
 
 ### Problem Statement
 > Danny started a pizza delivery service and hired runners to deliver pizzas ordered through his app. As a data-driven entrepreneur, he collected detailed data on customers, orders, runners, pizzas, and delivery metrics.

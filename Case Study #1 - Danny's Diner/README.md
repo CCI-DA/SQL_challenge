@@ -1,7 +1,7 @@
 ## Case Study #1 - Danny's Diner
 
 ### Description
->This is the first of eight challenges I will be solving over the next eight weeks.
+>This is the FIRST of eight challenges I will be solving over the next eight weeks.
 
 ### Problem Statement
 >Danny wants to better understand his customers by analyzing their behavior — particularly their visit patterns, total spending, and favorite menu items. Gaining these insights will allow him to provide a more personalized and engaging experience for his loyal customers.
