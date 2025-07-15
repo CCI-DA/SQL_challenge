@@ -28,7 +28,7 @@ ORDER BY customers DESC
 
 SELECT AVG(DATEDIFF(DAY,start_date,end_date)) AS average
 FROM customer_nodes
-WHERE end_date < '9999-12-31' AND customer_id = 1
+WHERE end_date < '9999-12-31'
 ;
 
 
@@ -48,6 +48,7 @@ WHERE cn.end_date < '9999-12-31'
 ;
 
 
+
 -- B. Customer Transactions
 
 -- 1.What is the unique count and total amount for each transaction type?
@@ -64,13 +65,18 @@ GROUP BY txn_type
 -- 2.What is the average total historical deposit counts and amounts for all customers?
 
 WITH calculation_total_historical AS(
-    SELECT customer_id , SUM(txn_amount) AS total_amount , COUNT(*) AS total_deposits
+    SELECT 
+      customer_id , 
+      SUM(txn_amount) AS total_amount , 
+      COUNT(*) AS total_deposits
     FROM customer_transactions
     WHERE txn_type = 'deposit'
     GROUP BY customer_id
 )
 
-SELECT  AVG(total_deposits) avg_total_deposits , AVG(total_amount) AS avg_total_amount
+SELECT  
+  AVG(total_deposits) avg_total_deposits , 
+  AVG(total_amount) AS avg_total_amount
 FROM calculation_total_historical
 ;
 
@@ -89,9 +95,10 @@ WITH more_than_one_deposit AS(
 ),
 
 purchase_or_withdrawal AS(
-    SELECT customer_id, 
-    FORMAT(txn_date, 'yyyy-MM') AS month_ , 
-    COUNT(txn_type) AS count_customers
+    SELECT 
+      customer_id, 
+      FORMAT(txn_date, 'yyyy-MM') AS month_ , 
+      COUNT(txn_type) AS count_customers
     FROM customer_transactions
     WHERE txn_type IN  ('purchase','withdrawal')
     GROUP BY FORMAT(txn_date, 'yyyy-MM'), customer_id
@@ -112,11 +119,10 @@ WITH running_balance AS (
     customer_id,
     txn_date,
     FORMAT(txn_date, 'yyyy-MM') AS month,
-    SUM(txn_amount) OVER ( PARTITION BY customer_id ORDER BY txn_date
-      ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-    ) AS balance
+    SUM(txn_amount) OVER ( PARTITION BY customer_id ORDER BY txn_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS balance
   FROM customer_transactions
 ),
+
 month_end AS (
   SELECT customer_id, month, MAX(txn_date) AS last_txn_date
   FROM running_balance
@@ -150,20 +156,24 @@ WITH closing_balances AS (
       FROM customer_transactions
     ) AS rb
     INNER JOIN (
-      SELECT customer_id, FORMAT(txn_date, 'yyyy-MM') AS month, MAX(txn_date) AS last_txn_date
+      SELECT 
+        customer_id, 
+        FORMAT(txn_date, 'yyyy-MM') AS month, 
+        MAX(txn_date) AS last_txn_date
       FROM customer_transactions
       GROUP BY customer_id, FORMAT(txn_date, 'yyyy-MM')
     ) AS me
-      ON rb.customer_id = me.customer_id
-      AND rb.month = me.month
-      AND rb.txn_date = me.last_txn_date
-  )AS x
+      ON rb.customer_id = me.customer_id AND rb.month = me.month AND rb.txn_date = me.last_txn_date
+    )AS x
 ),
+
 max_rn_per_customer AS (
   SELECT customer_id, MAX(rn) AS max_rn
   FROM closing_balances
   GROUP BY customer_id
+
 ),
+
 first_last_balance AS (
   SELECT
     cb1.customer_id,
@@ -173,10 +183,12 @@ first_last_balance AS (
   INNER JOIN max_rn_per_customer mrc ON cb1.customer_id = mrc.customer_id
   GROUP BY cb1.customer_id
 ),
+
 increased_customers AS (
   SELECT customer_id
   FROM first_last_balance
   WHERE last_balance > first_balance * 1.05
+
 )
 SELECT CAST(COUNT(ic.customer_id) AS FLOAT) / COUNT(flb.customer_id) * 100 AS percentage_increased
 FROM first_last_balance flb
@@ -199,7 +211,9 @@ LEFT JOIN increased_customers ic ON flb.customer_id = ic.customer_id
 
 --    running customer balance column that includes the impact each transaction
 
-SELECT customer_id , SUM(txn_amount) OVER (PARTITION BY customer_id ORDER BY txn_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_balance
+SELECT 
+  customer_id , 
+  SUM(txn_amount) OVER (PARTITION BY customer_id ORDER BY txn_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_balance
 FROM customer_transactions
 GROUP BY customer_id, txn_date, txn_amount
 ;
@@ -226,7 +240,12 @@ ORDER BY customer_id, month;
 
 --    minimum, average and maximum values of the running balance for each customer
 
-SELECT customer_id, SUM(txn_amount) AS total_balance , AVG(txn_amount) AS average , MAX(txn_amount) AS maximun , MIN(txn_amount) AS minimun
+SELECT 
+  customer_id, 
+  SUM(txn_amount) AS total_balance , 
+  AVG(txn_amount) AS average , 
+  MAX(txn_amount) AS maximun , 
+  MIN(txn_amount) AS minimun
 FROM customer_transactions
 GROUP BY customer_id
 ORDER BY customer_id
