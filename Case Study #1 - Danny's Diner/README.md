@@ -18,10 +18,15 @@
 > You can refer to the entity relationship diagram in ER_Model_Case.png.
 
 ### What to spect
-> 1. Common Table Expressions
-> 2. Group By Aggregates
-> 3. Window Functions for ranking
-> 4. Table Joins
+> Common Table Expressions (CTEs) (WITH statements)
+> GROUP BY aggregates (SUM, COUNT, etc.)
+> Window functions for ranking (ROW_NUMBER(), RANK(), DENSE_RANK())
+> Table joins (INNER JOIN, LEFT JOIN)
+> Conditional logic (CASE WHEN)
+> Aliasing columns and tables
+> Filtering with WHERE
+> Ordering results (ORDER BY)
+> Data transformation for business logic (e.g., loyalty points, membership status)
 
 ### Setup and Tools
 > 1. Developed using Visual Studio Code (VS Code).

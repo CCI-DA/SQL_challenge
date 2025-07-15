@@ -17,14 +17,23 @@
 > You can refer to the entity relationship diagram in ER_Model_Case2.png.
 
 ### What to spect
-> Primero nos fijamos que las tablas customer_orders y runner_orders tienen inconsitencia de datos. Hay que limpiar ambas tablas para poder trabajar con ellas. En la parte de clean_data , podreis observar las modificaciones realizadas.
-> 1. Data cleaning.
-> 2. Group by aggregates.
-> 3. Table joins.
-> 4. String transformations.
-> 5. Dealing with null values.
-> 6. Regular expressions.
-> 7. Common table expressions.
+> Basic SELECT statements
+> Aggregate functions (COUNT, SUM, AVG, MIN, MAX)
+> GROUP BY and ORDER BY clauses
+> JOINs (INNER JOIN, LEFT JOIN)
+> Common Table Expressions (CTEs) using WITH
+> Window functions (COUNT(*) OVER, etc.)
+> Subqueries
+> Conditional logic (CASE WHEN)
+> String functions (STRING_AGG, CROSS APPLY string_split)
+> Date and time functions (DATEDIFF, DATEPART, DATENAME, DATEADD, FLOOR)
+> Aliasing columns and tables
+> Filtering with WHERE and HAVING
+> Data cleaning and transformation
+> Handling NULL values
+> Schema design and DDL (CREATE TABLE, ALTER TABLE)
+> Business logic implementation in SQL (e.g., pricing, ratings, profit calculation)
+> Data modeling for new features (e.g., adding new pizzas, ratings system)
 
 ### Setup and Tools
 > 1. Developed using Visual Studio Code (VS Code).

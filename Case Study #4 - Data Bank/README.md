@@ -14,14 +14,22 @@
 
 ### What to spect
 
-> 1. Data cleaning.
-> 2. Group by aggregates.
-> 3. Table joins.
-> 4. String transformations.
-> 5. Dealing with null values.
-> 6. Regular expressions.
-> 7. Common table expressions.
-> 8. Subjoins.
+> Data cleaning
+> Basic SELECT statements
+> Aggregate functions (COUNT, SUM, AVG, MIN, MAX)
+> GROUP BY and ORDER BY clauses
+> JOINs (INNER JOIN, LEFT JOIN)
+> Common Table Expressions (CTEs) using WITH
+> Window functions (e.g., SUM() OVER, ROW_NUMBER() OVER, PERCENTILE_CONT() OVER)
+> Subqueries (nested SELECT statements)
+> Conditional aggregation (using CASE WHEN)
+> Date and time functions (FORMAT, DATEDIFF, etc.)
+> Aliasing columns and tables
+> Filtering with WHERE and HAVING
+> Percentile calculations
+> Calculating running totals and balances
+> Calculating percentages
+> Interest calculations using arithmetic expressions
 
 ### Setup and Tools
 > 1. Developed using Visual Studio Code (VS Code).
