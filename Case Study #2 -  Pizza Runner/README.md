@@ -14,26 +14,26 @@
 
 >This case is a hands-on opportunity to apply SQL to real-world delivery data and derive actionable insights.
 
-> You can refer to the entity relationship diagram in ER_Model_Case2.png.
 
 ### What to spect
-> Basic SELECT statements
-> Aggregate functions (COUNT, SUM, AVG, MIN, MAX)
-> GROUP BY and ORDER BY clauses
-> JOINs (INNER JOIN, LEFT JOIN)
-> Common Table Expressions (CTEs) using WITH
-> Window functions (COUNT(*) OVER, etc.)
-> Subqueries
-> Conditional logic (CASE WHEN)
-> String functions (STRING_AGG, CROSS APPLY string_split)
-> Date and time functions (DATEDIFF, DATEPART, DATENAME, DATEADD, FLOOR)
-> Aliasing columns and tables
-> Filtering with WHERE and HAVING
-> Data cleaning and transformation
-> Handling NULL values
-> Schema design and DDL (CREATE TABLE, ALTER TABLE)
-> Business logic implementation in SQL (e.g., pricing, ratings, profit calculation)
-> Data modeling for new features (e.g., adding new pizzas, ratings system)
+> 1. Basic SELECT statements
+> 2. Aggregate functions (COUNT, SUM, AVG, MIN, MAX)
+> 3. GROUP BY and ORDER BY clauses
+> 4. JOINs (INNER JOIN, LEFT JOIN)
+> 5. Common Table Expressions (CTEs) using WITH
+> 6. Window functions (COUNT(*) OVER, etc.)
+> 7. Subqueries
+> 8. Conditional logic (CASE WHEN)
+> 9. String functions (STRING_AGG, CROSS APPLY string_split)
+> 10. Date and time functions (DATEDIFF, DATEPART, DATENAME, DATEADD, FLOOR)
+> 11. Aliasing columns and tables
+> 12. Filtering with WHERE and HAVING
+> 13. Data cleaning and transformation
+> 14. Handling NULL values
+> 15. Schema design and DDL (CREATE TABLE, ALTER TABLE)
+> 16. Business logic implementation in SQL (e.g., pricing, ratings, profit calculation)
+> 17. Data modeling for new features (e.g., adding new pizzas, ratings system)
+
 
 ### Setup and Tools
 > 1. Developed using Visual Studio Code (VS Code).

@@ -15,18 +15,17 @@
 > 2.menu
 > 3.members
 
-> You can refer to the entity relationship diagram in ER_Model_Case.png.
 
 ### What to spect
-> Common Table Expressions (CTEs) (WITH statements)
-> GROUP BY aggregates (SUM, COUNT, etc.)
-> Window functions for ranking (ROW_NUMBER(), RANK(), DENSE_RANK())
-> Table joins (INNER JOIN, LEFT JOIN)
-> Conditional logic (CASE WHEN)
-> Aliasing columns and tables
-> Filtering with WHERE
-> Ordering results (ORDER BY)
-> Data transformation for business logic (e.g., loyalty points, membership status)
+> 1. Common Table Expressions (CTEs) (WITH statements)
+> 2. GROUP BY aggregates (SUM, COUNT, etc.)
+> 3. Window functions for ranking (ROW_NUMBER(), RANK(), DENSE_RANK())
+> 4. Table joins (INNER JOIN, LEFT JOIN)
+> 5. Conditional logic (CASE WHEN)
+> 6. Aliasing columns and tables
+> 7. Filtering with WHERE
+> 8. Ordering results (ORDER BY)
+> 9. Data transformation for business logic (e.g., loyalty points, membership status)
 
 ### Setup and Tools
 > 1. Developed using Visual Studio Code (VS Code).

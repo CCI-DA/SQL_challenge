@@ -14,22 +14,23 @@
 
 ### What to spect
 
-> Data cleaning
-> Basic SELECT statements
-> Aggregate functions (COUNT, SUM, AVG, MIN, MAX)
-> GROUP BY and ORDER BY clauses
-> JOINs (INNER JOIN, LEFT JOIN)
-> Common Table Expressions (CTEs) using WITH
-> Window functions (e.g., SUM() OVER, ROW_NUMBER() OVER, PERCENTILE_CONT() OVER)
-> Subqueries (nested SELECT statements)
-> Conditional aggregation (using CASE WHEN)
-> Date and time functions (FORMAT, DATEDIFF, etc.)
-> Aliasing columns and tables
-> Filtering with WHERE and HAVING
-> Percentile calculations
-> Calculating running totals and balances
-> Calculating percentages
-> Interest calculations using arithmetic expressions
+> 1. Data cleaning
+> 2. Basic SELECT statements
+> 3. Aggregate functions (COUNT, SUM, AVG, MIN, MAX)
+> 4. GROUP BY and ORDER BY clauses
+> 5. JOINs (INNER JOIN, LEFT JOIN)
+> 6. Common Table Expressions (CTEs) using WITH
+> 7. Window functions (e.g., SUM() OVER, ROW_NUMBER() OVER, PERCENTILE_CONT() OVER)
+> 8. Subqueries (nested SELECT statements)
+> 9. Conditional aggregation (using CASE WHEN)
+> 10. Date and time functions (FORMAT, DATEDIFF, etc.)
+> 11. Aliasing columns and tables
+> 12. Filtering with WHERE and HAVING
+> 13. Percentile calculations
+> 14. Calculating running totals and balances
+> 15. Calculating percentages
+> 16. Interest calculations using arithmetic expressions
+
 
 ### Setup and Tools
 > 1. Developed using Visual Studio Code (VS Code).

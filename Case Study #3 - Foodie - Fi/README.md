@@ -10,21 +10,22 @@
 
 ### What to spect
 
-> Data cleaning
-> GROUP BY aggregates (SUM, COUNT, AVG, etc.)
-> Table joins (INNER JOIN)
-> String transformations (e.g., using string functions)
-> Dealing with NULL values
-> Regular expressions (for advanced string matching and cleaning)
-> Common Table Expressions (CTEs) (WITH statements)
-> Subqueries and subjoins
-> Window functions (ROW_NUMBER(), etc.)
-> Conditional logic (CASE WHEN)
-> Aliasing columns and tables
-> Filtering with WHERE
-> Bucketing and range grouping
-> Date and time functions (DATEDIFF, DATEFROMPARTS, etc.)
-> Business logic implementation in SQL (e.g., churn, upgrades, downgrades, payment calculations)
+> 1.Data cleaning
+> 2. GROUP BY aggregates (SUM, COUNT, AVG, etc.)
+> 3. Table joins (INNER JOIN)
+> 4. String transformations (e.g., using string functions)
+> 5. Dealing with NULL values
+> 6. Regular expressions (for advanced string matching and cleaning)
+> 7. Common Table Expressions (CTEs) (WITH statements)
+> 8. Subqueries and subjoins
+> 9. Window functions (ROW_NUMBER(), etc.)
+> 10. Conditional logic (CASE WHEN)
+> 11. Aliasing columns and tables
+> 12. Filtering with WHERE
+> 13. Bucketing and range grouping
+> 14. Date and time functions (DATEDIFF, DATEFROMPARTS, etc.)
+> 15. Business logic implementation in SQL (e.g., churn, upgrades, downgrades, payment calculations)
+
 
 ### Setup and Tools
 > 1. Developed using Visual Studio Code (VS Code).
