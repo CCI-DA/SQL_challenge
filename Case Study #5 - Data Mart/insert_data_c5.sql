@@ -1,4 +1,4 @@
-INSERT INTO data_mart.weekly_sales
+INSERT INTO data_mart_weekly_sales
   ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
 VALUES
   ('31/8/20', 'ASIA', 'Retail', 'C3', 'New', '120631', '3656163'),
@@ -1000,7 +1000,12 @@ VALUES
   ('3/8/20', 'ASIA', 'Shopify', 'F2', 'Existing', '2765', '517548'),
   ('3/8/20', 'ASIA', 'Retail', 'F1', 'New', '27282', '857603'),
   ('3/8/20', 'OCEANIA', 'Retail', 'F3', 'Existing', '528117', '29101768'),
-  ('3/8/20', 'AFRICA', 'Shopify', 'F2', 'New', '235', '39520'),
+  ('3/8/20', 'AFRICA', 'Shopify', 'F2', 'New', '235', '39520');
+
+
+INSERT INTO data_mart_weekly_sales
+  ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
+VALUES
   ('3/8/20', 'EUROPE', 'Shopify', 'F3', 'Existing', '119', '29953'),
   ('3/8/20', 'ASIA', 'Shopify', 'C1', 'New', '271', '33537'),
   ('3/8/20', 'USA', 'Shopify', 'C2', 'New', '199', '33415'),
@@ -2000,7 +2005,12 @@ VALUES
   ('6/7/20', 'OCEANIA', 'Shopify', 'C1', 'Existing', '2333', '406081'),
   ('6/7/20', 'AFRICA', 'Retail', 'F2', 'New', '63799', '2344198'),
   ('6/7/20', 'OCEANIA', 'Shopify', 'C3', 'Existing', '3895', '796093'),
-  ('6/7/20', 'SOUTH AMERICA', 'Retail', 'C2', 'New', '927', '27950'),
+  ('6/7/20', 'SOUTH AMERICA', 'Retail', 'C2', 'New', '927', '27950');
+
+
+INSERT INTO data_mart_weekly_sales
+  ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
+VALUES
   ('6/7/20', 'OCEANIA', 'Shopify', 'F2', 'Existing', '5368', '1086528'),
   ('6/7/20', 'OCEANIA', 'Shopify', 'C2', 'New', '589', '86961'),
   ('6/7/20', 'CANADA', 'Shopify', 'C4', 'Existing', '94', '19118'),
@@ -3000,7 +3010,12 @@ VALUES
   ('8/6/20', 'CANADA', 'Shopify', 'F1', 'New', '68', '8799'),
   ('8/6/20', 'OCEANIA', 'Shopify', 'C1', 'New', '359', '42863'),
   ('8/6/20', 'CANADA', 'Shopify', 'null', 'Existing', '85', '14152'),
-  ('8/6/20', 'CANADA', 'Retail', 'C4', 'New', '12452', '407617'),
+  ('8/6/20', 'CANADA', 'Retail', 'C4', 'New', '12452', '407617');
+
+
+INSERT INTO data_mart_weekly_sales
+  ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
+VALUES
   ('8/6/20', 'OCEANIA', 'Shopify', 'F2', 'Existing', '5896', '1137030'),
   ('8/6/20', 'SOUTH AMERICA', 'Shopify', 'F3', 'Existing', '22', '3900'),
   ('8/6/20', 'USA', 'Shopify', 'F1', 'New', '141', '18853'),
@@ -4000,7 +4015,12 @@ VALUES
   ('11/5/20', 'CANADA', 'Shopify', 'C4', 'Existing', '109', '18431'),
   ('11/5/20', 'OCEANIA', 'Shopify', 'C1', 'New', '463', '51162'),
   ('11/5/20', 'EUROPE', 'Shopify', 'F2', 'New', '6', '787'),
-  ('11/5/20', 'OCEANIA', 'Shopify', 'C4', 'New', '96', '11167'),
+  ('11/5/20', 'OCEANIA', 'Shopify', 'C4', 'New', '96', '11167');
+
+
+INSERT INTO data_mart_weekly_sales
+  ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
+VALUES
   ('11/5/20', 'OCEANIA', 'Retail', 'C4', 'New', '59620', '1770055'),
   ('11/5/20', 'USA', 'Shopify', 'C3', 'New', '205', '24343'),
   ('11/5/20', 'EUROPE', 'Shopify', 'C4', 'New', '2', '940'),
@@ -5000,7 +5020,12 @@ VALUES
   ('13/4/20', 'ASIA', 'Retail', 'C3', 'Existing', '257778', '11793422'),
   ('6/4/20', 'USA', 'Shopify', 'C1', 'Existing', '650', '116880'),
   ('6/4/20', 'USA', 'Shopify', 'C2', 'New', '213', '31075'),
-  ('6/4/20', 'CANADA', 'Shopify', 'null', 'Guest', '1394', '225859'),
+  ('6/4/20', 'CANADA', 'Shopify', 'null', 'Guest', '1394', '225859');
+
+
+INSERT INTO data_mart_weekly_sales
+  ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
+VALUES
   ('6/4/20', 'SOUTH AMERICA', 'Retail', 'null', 'Existing', '335', '13410'),
   ('6/4/20', 'CANADA', 'Shopify', 'C2', 'Existing', '601', '101280'),
   ('6/4/20', 'SOUTH AMERICA', 'Retail', 'F3', 'New', '398', '15809'),
@@ -6000,7 +6025,12 @@ VALUES
   ('26/8/19', 'SOUTH AMERICA', 'Shopify', 'C3', 'New', '24', '3997'),
   ('26/8/19', 'USA', 'Shopify', 'C2', 'New', '210', '32452'),
   ('26/8/19', 'ASIA', 'Retail', 'C2', 'New', '78024', '2081900'),
-  ('26/8/19', 'AFRICA', 'Shopify', 'C2', 'Existing', '2012', '379441'),
+  ('26/8/19', 'AFRICA', 'Shopify', 'C2', 'Existing', '2012', '379441');
+
+
+INSERT INTO data_mart_weekly_sales
+  ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
+VALUES
   ('26/8/19', 'SOUTH AMERICA', 'Retail', 'null', 'Existing', '137', '6674'),
   ('26/8/19', 'OCEANIA', 'Shopify', 'F1', 'New', '310', '45813'),
   ('26/8/19', 'ASIA', 'Shopify', 'F3', 'Existing', '1410', '277589'),
@@ -7000,7 +7030,13 @@ VALUES
   ('29/7/19', 'ASIA', 'Retail', 'C2', 'New', '75346', '2027373'),
   ('29/7/19', 'SOUTH AMERICA', 'Retail', 'F2', 'New', '376', '14547'),
   ('29/7/19', 'EUROPE', 'Shopify', 'C4', 'Existing', '13', '4398'),
-  ('29/7/19', 'ASIA', 'Retail', 'C2', 'Existing', '110522', '4339665'),
+  ('29/7/19', 'ASIA', 'Retail', 'C2', 'Existing', '110522', '4339665');
+
+
+INSERT INTO data_mart_weekly_sales
+  ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
+VALUES
+
   ('29/7/19', 'OCEANIA', 'Shopify', 'null', 'Existing', '513', '95582'),
   ('29/7/19', 'USA', 'Retail', 'C3', 'Existing', '91291', '5237254'),
   ('29/7/19', 'CANADA', 'Shopify', 'F1', 'New', '67', '10625'),
@@ -8000,7 +8036,12 @@ VALUES
   ('1/7/19', 'SOUTH AMERICA', 'Retail', 'null', 'New', '2285', '74446'),
   ('1/7/19', 'EUROPE', 'Retail', 'C1', 'Existing', '13076', '587020'),
   ('1/7/19', 'ASIA', 'Retail', 'F3', 'Existing', '344430', '17276400'),
-  ('1/7/19', 'EUROPE', 'Shopify', 'F1', 'New', '7', '1032'),
+  ('1/7/19', 'EUROPE', 'Shopify', 'F1', 'New', '7', '1032');
+
+
+INSERT INTO data_mart_weekly_sales
+  ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
+VALUES
   ('1/7/19', 'OCEANIA', 'Retail', 'null', 'Existing', '42679', '1768059'),
   ('1/7/19', 'SOUTH AMERICA', 'Shopify', 'null', 'New', '51', '8642'),
   ('1/7/19', 'SOUTH AMERICA', 'Retail', 'C2', 'New', '799', '24707'),
@@ -9000,7 +9041,13 @@ VALUES
   ('3/6/19', 'OCEANIA', 'Shopify', 'C2', 'Existing', '3171', '588846'),
   ('3/6/19', 'USA', 'Shopify', 'F1', 'Existing', '1207', '218347'),
   ('3/6/19', 'EUROPE', 'Retail', 'C1', 'New', '3922', '117988'),
-  ('3/6/19', 'OCEANIA', 'Retail', 'F2', 'New', '82903', '2948816'),
+  ('3/6/19', 'OCEANIA', 'Retail', 'F2', 'New', '82903', '2948816');
+
+
+
+INSERT INTO data_mart_weekly_sales
+  ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
+VALUES
   ('3/6/19', 'OCEANIA', 'Retail', 'C3', 'Existing', '303994', '15360658'),
   ('3/6/19', 'SOUTH AMERICA', 'Shopify', 'C1', 'Existing', '47', '7572'),
   ('3/6/19', 'SOUTH AMERICA', 'Retail', 'null', 'Guest', '392782', '15762408'),
@@ -10000,7 +10047,13 @@ VALUES
   ('29/4/19', 'OCEANIA', 'Shopify', 'null', 'New', '417', '70427'),
   ('29/4/19', 'USA', 'Retail', 'F2', 'Existing', '91713', '5696656'),
   ('29/4/19', 'OCEANIA', 'Retail', 'C4', 'Existing', '136897', '6984759'),
-  ('29/4/19', 'CANADA', 'Shopify', 'C1', 'Existing', '381', '66034'),
+  ('29/4/19', 'CANADA', 'Shopify', 'C1', 'Existing', '381', '66034');
+
+
+  INSERT INTO data_mart_weekly_sales
+  ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
+VALUES
+
   ('29/4/19', 'ASIA', 'Shopify', 'C3', 'New', '191', '26794'),
   ('29/4/19', 'USA', 'Shopify', 'C2', 'New', '159', '23339'),
   ('29/4/19', 'AFRICA', 'Shopify', 'null', 'New', '230', '38826'),
@@ -11000,7 +11053,13 @@ VALUES
   ('1/4/19', 'OCEANIA', 'Shopify', 'F1', 'Existing', '2983', '568641'),
   ('1/4/19', 'OCEANIA', 'Shopify', 'C3', 'Existing', '3233', '660014'),
   ('1/4/19', 'SOUTH AMERICA', 'Retail', 'C1', 'Existing', '2808', '79626'),
-  ('1/4/19', 'AFRICA', 'Shopify', 'C3', 'Existing', '1814', '371785'),
+  ('1/4/19', 'AFRICA', 'Shopify', 'C3', 'Existing', '1814', '371785');
+
+
+
+INSERT INTO data_mart_weekly_sales
+  ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
+VALUES
   ('1/4/19', 'ASIA', 'Retail', 'C4', 'Existing', '103887', '5003371'),
   ('1/4/19', 'SOUTH AMERICA', 'Retail', 'F1', 'Existing', '736', '35575'),
   ('1/4/19', 'AFRICA', 'Retail', 'null', 'Guest', '1673549', '47937030'),
@@ -12000,7 +12059,13 @@ VALUES
   ('20/8/18', 'EUROPE', 'Shopify', 'F3', 'New', '2', '393'),
   ('20/8/18', 'EUROPE', 'Retail', 'F3', 'New', '1569', '69378'),
   ('20/8/18', 'OCEANIA', 'Shopify', 'C4', 'Existing', '429', '80959'),
-  ('20/8/18', 'EUROPE', 'Retail', 'C3', 'Existing', '13751', '777063'),
+  ('20/8/18', 'EUROPE', 'Retail', 'C3', 'Existing', '13751', '777063');
+
+
+INSERT INTO data_mart_weekly_sales
+  ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
+VALUES
+
   ('20/8/18', 'ASIA', 'Shopify', 'C3', 'New', '182', '28160'),
   ('20/8/18', 'USA', 'Retail', 'C3', 'New', '40183', '1621339'),
   ('20/8/18', 'CANADA', 'Retail', 'null', 'New', '14351', '588722'),
@@ -13000,7 +13065,12 @@ VALUES
   ('23/7/18', 'USA', 'Shopify', 'F3', 'Existing', '756', '171048'),
   ('23/7/18', 'OCEANIA', 'Shopify', 'F2', 'Existing', '4039', '852099'),
   ('23/7/18', 'OCEANIA', 'Retail', 'F3', 'Existing', '454760', '26450998'),
-  ('23/7/18', 'CANADA', 'Shopify', 'F2', 'Existing', '714', '141217'),
+  ('23/7/18', 'CANADA', 'Shopify', 'F2', 'Existing', '714', '141217');
+
+
+INSERT INTO data_mart_weekly_sales
+  ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
+VALUES
   ('23/7/18', 'EUROPE', 'Shopify', 'F3', 'New', '4', '655'),
   ('23/7/18', 'SOUTH AMERICA', 'Retail', 'F2', 'Existing', '988', '51124'),
   ('23/7/18', 'SOUTH AMERICA', 'Shopify', 'C3', 'New', '27', '4749'),
@@ -14000,7 +14070,13 @@ VALUES
   ('25/6/18', 'USA', 'Retail', 'null', 'Guest', '575757', '17581490'),
   ('25/6/18', 'CANADA', 'Shopify', 'F2', 'Existing', '720', '136428'),
   ('25/6/18', 'AFRICA', 'Retail', 'F3', 'New', '61582', '2367537'),
-  ('25/6/18', 'USA', 'Retail', 'C3', 'Existing', '80522', '4742107'),
+  ('25/6/18', 'USA', 'Retail', 'C3', 'Existing', '80522', '4742107');
+
+
+
+INSERT INTO data_mart_weekly_sales
+  ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
+VALUES
   ('25/6/18', 'AFRICA', 'Shopify', 'F3', 'Existing', '1385', '291230'),
   ('25/6/18', 'SOUTH AMERICA', 'Shopify', 'C4', 'New', '3', '346'),
   ('25/6/18', 'ASIA', 'Retail', 'F1', 'New', '28520', '969548'),
@@ -15000,7 +15076,15 @@ VALUES
   ('21/5/18', 'CANADA', 'Retail', 'C1', 'Existing', '49753', '2144631'),
   ('21/5/18', 'EUROPE', 'Retail', 'F2', 'Existing', '12613', '820002'),
   ('21/5/18', 'SOUTH AMERICA', 'Shopify', 'C3', 'New', '17', '2919'),
-  ('21/5/18', 'EUROPE', 'Shopify', 'C4', 'New', '2', '451'),
+  ('21/5/18', 'EUROPE', 'Shopify', 'C4', 'New', '2', '451');
+
+
+
+
+INSERT INTO data_mart_weekly_sales
+  ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
+VALUES
+
   ('21/5/18', 'SOUTH AMERICA', 'Retail', 'F1', 'New', '224', '7490'),
   ('21/5/18', 'CANADA', 'Retail', 'F3', 'New', '18031', '660500'),
   ('21/5/18', 'AFRICA', 'Retail', 'F1', 'Existing', '83025', '4658478'),
@@ -16000,7 +16084,14 @@ VALUES
   ('23/4/18', 'CANADA', 'Retail', 'F1', 'New', '7419', '280197'),
   ('23/4/18', 'SOUTH AMERICA', 'Shopify', 'F1', 'Existing', '25', '6022'),
   ('23/4/18', 'USA', 'Retail', 'null', 'Existing', '8309', '450175'),
-  ('23/4/18', 'OCEANIA', 'Retail', 'C2', 'Existing', '118996', '5050748'),
+  ('23/4/18', 'OCEANIA', 'Retail', 'C2', 'Existing', '118996', '5050748');
+
+
+
+INSERT INTO data_mart_weekly_sales
+  ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
+VALUES
+
   ('23/4/18', 'USA', 'Retail', 'F1', 'Existing', '33443', '2152991'),
   ('23/4/18', 'CANADA', 'Retail', 'F3', 'New', '18840', '716160'),
   ('23/4/18', 'SOUTH AMERICA', 'Shopify', 'F3', 'Existing', '13', '3123'),
@@ -17000,7 +17091,13 @@ VALUES
   ('26/3/18', 'SOUTH AMERICA', 'Retail', 'C2', 'New', '663', '22819'),
   ('26/3/18', 'SOUTH AMERICA', 'Shopify', 'F3', 'New', '4', '730'),
   ('26/3/18', 'AFRICA', 'Retail', 'C2', 'New', '51075', '1692383'),
-  ('26/3/18', 'AFRICA', 'Retail', 'F2', 'Existing', '221292', '12966045'),
+  ('26/3/18', 'AFRICA', 'Retail', 'F2', 'Existing', '221292', '12966045');
+  
+
+INSERT INTO data_mart_weekly_sales
+  ("week_date", "region", "platform", "segment", "customer_type", "transactions", "sales")
+VALUES
+
   ('26/3/18', 'CANADA', 'Retail', 'C4', 'Existing', '20888', '1126811'),
   ('26/3/18', 'USA', 'Retail', 'F3', 'Existing', '111812', '7485775'),
   ('26/3/18', 'SOUTH AMERICA', 'Shopify', 'F3', 'Existing', '16', '2729'),
@@ -17118,3 +17215,5 @@ VALUES
   ('26/3/18', 'USA', 'Retail', 'F2', 'New', '25665', '1064172'),
   ('26/3/18', 'EUROPE', 'Retail', 'C4', 'New', '883', '33523'),
   ('26/3/18', 'AFRICA', 'Retail', 'C3', 'Existing', '218516', '12083475');
+
+

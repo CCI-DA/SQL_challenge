@@ -8,3 +8,13 @@
     -- Add a new demographic column using the following mapping for the first letter in the segment values:
     -- Ensure all null string values with an "unknown" string value in the original segment column as well as the new age_band and demographic columns
     -- Generate a new avg_transaction column as the sales value divided by transactions rounded to 2 decimal places for each record
+
+SELECT 
+    CAST(week_date AS DATE) AS week_date,
+
+    DATENAME(week_date , 'M') AS month_number
+    
+
+INTO clean_weekly_sales
+FROM data_mart.weekly_sales
+;

@@ -1,5 +1,4 @@
-DROP TABLE IF EXISTS data_mart.weekly_sales;
-CREATE TABLE data_mart.weekly_sales (
+CREATE TABLE data_mart_weekly_sales (
   "week_date" VARCHAR(7),
   "region" VARCHAR(13),
   "platform" VARCHAR(7),
