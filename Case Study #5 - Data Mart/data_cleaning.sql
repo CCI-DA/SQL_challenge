@@ -8,13 +8,35 @@
     -- Add a new demographic column using the following mapping for the first letter in the segment values:
     -- Ensure all null string values with an "unknown" string value in the original segment column as well as the new age_band and demographic columns
     -- Generate a new avg_transaction column as the sales value divided by transactions rounded to 2 decimal places for each record
+--ALTER TABLE data_mart.dbo.data_mart_weekly_sales
+-- ALTER COLUMN segment VARCHAR(50);
+
+-- UPDATE data_mart_weekly_sales
+-- SET segment = 'unknown'
+-- WHERE segment = 'null'
+;
+
 
 SELECT 
-    CAST(week_date AS DATE) AS week_date,
+    CAST(week_date AS DATE) AS week_date_ , 
+    DATEPART(WEEK , week_date) AS week_number , 
+    DATEPART(MONTH, week_date) AS month_number,
+    DATEPART(YEAR ,week_date) AS calendar_year,
+    (CASE
+        WHEN segment LIKE '%1' THEN 'Young Adults'
+        WHEN segment LIKE '%2' THEN 'Middle Aged'
+        WHEN segment LIKE '%3' THEN 'Retirees'
+        WHEN segment LIKE '%4' THEN 'Retirees'
+        ELSE 'Unknown'
+    END) AS age_band,
+   (CASE
+        WHEN segment LIKE 'F%' THEN 'Families'
+        WHEN segment LIKE 'C%' THEN 'Couples'
+        ELSE 'Unknown'
+    END) AS demographic,
+    ROUND(CAST(sales AS FLOAT) / NULLIF(transactions, 0), 2) AS avg_transaction
 
-    DATENAME(week_date , 'M') AS month_number
-    
+INTO clean_weekly_sales 
+FROM data_mart_weekly_sales
 
-INTO clean_weekly_sales
-FROM data_mart.weekly_sales
 ;
